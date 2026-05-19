@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1779202549110",
+    "name": "REPO",
+    "repoUrl": "https://github.com/ahmad-abdulmajid/cloudbuilder-demo-app",
+    "port": 3000,
+    "status": "created",
+    "createdAt": "2026-05-19T14:55:49.110Z",
+    "lastDeploymentStartedAt": "2026-05-19T14:55:50.613Z",
+    "lastDeploymentFinishedAt": "2026-05-19T14:55:55.425Z",
+    "lastUndeployedAt": "2026-05-19T14:56:04.699Z",
+    "deploymentError": null,
+    "localPath": "/home/qardan/cloudbuilder/backend/deployments/1779202549110",
+    "dockerImageName": "cloudbuilder-1779202549110",
+    "dockerContainerName": null,
+    "serviceUrl": null
+  }
+]
