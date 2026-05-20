@@ -1,0 +1,22 @@
+{
+  "family": "cloudbuilder-backend-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::349326897252:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "cloudbuilder-backend-container",
+      "image": "349326897252.dkr.ecr.eu-central-1.amazonaws.com/cloudbuilder-backend:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 5000,
+          "hostPort": 5000,
+          "protocol": "tcp"
+        }
+      ]
+    }
+  ]
+}

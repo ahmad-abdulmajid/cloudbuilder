@@ -16,4 +16,11 @@ app.get("/", (req, res) => {
   res.json({ message: "Backend is running" });
 });
 
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    service: "cloudbuilder-backend"
+  });
+});
+
 module.exports = app;
