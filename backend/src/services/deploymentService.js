@@ -1,7 +1,12 @@
 const fs = require("fs");
 const path = require("path");
 const { execFile } = require("child_process");
-const { loadServices, saveServices } = require("../utils/serviceStorage");
+const {
+  loadServices,
+  saveServices,
+  pushDeploymentHistory,
+  updateDeploymentHistoryEntry,
+} = require("../utils/serviceStorage");
 
 // __dirname is backend/src/services
 // "../.." goes to backend
@@ -67,6 +72,17 @@ async function startLocalDeployment(service) {
   const imageName = getDockerImageName(service);
   const containerName = getDockerContainerName(service);
 
+  const historyRecord = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    type: "deploy",
+    status: "in-progress",
+    startedAt: new Date().toISOString(),
+    finishedAt: null,
+    error: null,
+  };
+
+  pushDeploymentHistory(service.id, historyRecord);
+
   try {
     console.log(`Starting deployment for service: ${service.name}`);
 
@@ -95,11 +111,20 @@ async function startLocalDeployment(service) {
     if (!fs.existsSync(dockerfilePath)) {
       console.log("Deployment failed: Dockerfile not found");
 
+      const finishedAt = new Date().toISOString();
+      const errorMessage = "Dockerfile not found in repository";
+
       updateService(service.id, {
         status: "failed",
-        lastDeploymentFinishedAt: new Date().toISOString(),
-        deploymentError: "Dockerfile not found in repository",
+        lastDeploymentFinishedAt: finishedAt,
+        deploymentError: errorMessage,
         localPath: serviceDeployPath,
+      });
+
+      updateDeploymentHistoryEntry(service.id, historyRecord.id, {
+        status: "failed",
+        finishedAt,
+        error: errorMessage,
       });
 
       return;
@@ -132,25 +157,42 @@ async function startLocalDeployment(service) {
 
     console.log("Docker container started successfully");
 
+    const finishedAt = new Date().toISOString();
+
     updateService(service.id, {
       status: "deployed",
-      lastDeploymentFinishedAt: new Date().toISOString(),
+      lastDeploymentFinishedAt: finishedAt,
       deploymentError: null,
       localPath: serviceDeployPath,
       dockerImageName: imageName,
       dockerContainerName: containerName,
       serviceUrl: `http://localhost:${service.port}`,
     });
+
+    updateDeploymentHistoryEntry(service.id, historyRecord.id, {
+      status: "success",
+      finishedAt,
+      error: null,
+    });
   } catch (error) {
     console.log("Deployment failed:", error);
 
+    const finishedAt = new Date().toISOString();
+    const errorMessage = String(error);
+
     updateService(service.id, {
       status: "failed",
-      lastDeploymentFinishedAt: new Date().toISOString(),
-      deploymentError: String(error),
+      lastDeploymentFinishedAt: finishedAt,
+      deploymentError: errorMessage,
       localPath: serviceDeployPath,
       dockerImageName: imageName,
       dockerContainerName: containerName,
+    });
+
+    updateDeploymentHistoryEntry(service.id, historyRecord.id, {
+      status: "failed",
+      finishedAt,
+      error: errorMessage,
     });
   }
 }
@@ -158,18 +200,37 @@ async function startLocalDeployment(service) {
 async function stopLocalDeployment(service) {
   const containerName = service.dockerContainerName || getDockerContainerName(service);
 
+  const historyRecord = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    type: "undeploy",
+    status: "in-progress",
+    startedAt: new Date().toISOString(),
+    finishedAt: null,
+    error: null,
+  };
+
+  pushDeploymentHistory(service.id, historyRecord);
+
   try {
     console.log(`Stopping container for service: ${service.name}`);
     console.log(`Removing container: ${containerName}`);
 
     await removeExistingContainer(containerName);
 
+    const finishedAt = new Date().toISOString();
+
     const updatedService = updateService(service.id, {
       status: "created",
       serviceUrl: null,
       dockerContainerName: null,
       deploymentError: null,
-      lastUndeployedAt: new Date().toISOString(),
+      lastUndeployedAt: finishedAt,
+    });
+
+    updateDeploymentHistoryEntry(service.id, historyRecord.id, {
+      status: "success",
+      finishedAt,
+      error: null,
     });
 
     console.log("Container removed successfully");
@@ -178,10 +239,19 @@ async function stopLocalDeployment(service) {
   } catch (error) {
     console.log("Undeploy failed:", error);
 
+    const finishedAt = new Date().toISOString();
+    const errorMessage = String(error);
+
     const updatedService = updateService(service.id, {
       status: "failed",
-      deploymentError: String(error),
-      lastUndeployedAt: new Date().toISOString(),
+      deploymentError: errorMessage,
+      lastUndeployedAt: finishedAt,
+    });
+
+    updateDeploymentHistoryEntry(service.id, historyRecord.id, {
+      status: "failed",
+      finishedAt,
+      error: errorMessage,
     });
 
     return updatedService;

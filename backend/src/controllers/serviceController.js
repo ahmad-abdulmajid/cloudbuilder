@@ -58,6 +58,7 @@ function createService(req, res) {
     dockerImageName: null,
     dockerContainerName: null,
     serviceUrl: null,
+    deploymentHistory: [],
   };
 
   services.push(newService);

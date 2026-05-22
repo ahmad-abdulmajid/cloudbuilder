@@ -14,5 +14,31 @@
     "dockerImageName": "cloudbuilder-1779202549110",
     "dockerContainerName": null,
     "serviceUrl": null
+  },
+  {
+    "id": "1779412905612",
+    "name": "Test Histroy",
+    "repoUrl": "https://github.com/cloudacademy/static-website-example",
+    "port": 4000,
+    "status": "failed",
+    "createdAt": "2026-05-22T01:21:45.612Z",
+    "lastDeploymentStartedAt": "2026-05-22T01:21:46.557Z",
+    "lastDeploymentFinishedAt": "2026-05-22T01:21:51.745Z",
+    "lastUndeployedAt": null,
+    "deploymentError": "Dockerfile not found in repository",
+    "localPath": "/home/qardan/cloudbuilder/backend/deployments/1779412905612",
+    "dockerImageName": null,
+    "dockerContainerName": null,
+    "serviceUrl": null,
+    "deploymentHistory": [
+      {
+        "id": "1779412906558-tt6gmr",
+        "type": "deploy",
+        "status": "failed",
+        "startedAt": "2026-05-22T01:21:46.558Z",
+        "finishedAt": "2026-05-22T01:21:51.745Z",
+        "error": "Dockerfile not found in repository"
+      }
+    ]
   }
 ]
