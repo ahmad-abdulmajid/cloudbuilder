@@ -134,6 +134,29 @@ function deployService(req, res) {
   });
 }
 
+function redeployService(req, res) {
+  const services = loadServices();
+  const service = services.find((s) => s.id === req.params.id);
+
+  if (!service) {
+    return res.status(404).json({ message: "Service not found" });
+  }
+
+  service.status = "building";
+  service.lastDeploymentStartedAt = new Date().toISOString();
+  service.lastDeploymentFinishedAt = null;
+  service.deploymentError = null;
+
+  saveServices(services);
+
+  startLocalDeployment({ ...service });
+
+  return res.status(202).json({
+    message: "Redeployment started",
+    service,
+  });
+}
+
 async function stopService(req, res) {
   const services = loadServices();
   const service = services.find((s) => s.id === req.params.id);
@@ -193,6 +216,7 @@ module.exports = {
   getServiceById,
   updateServiceStatus,
   deployService,
+  redeployService,
   stopService,
   deleteService,
 };
