@@ -11,3 +11,4 @@ backend/src/deployments/
 .DS_Store
 dist/
 build/
+cloudbuilder.zip
