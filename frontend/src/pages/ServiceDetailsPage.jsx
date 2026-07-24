@@ -38,6 +38,28 @@ function ServiceDetailsPage() {
     });
   };
 
+  const formatDuration = (startedAt, finishedAt) => {
+    if (!startedAt || !finishedAt) {
+      return '—';
+    }
+
+    const seconds = Math.round((new Date(finishedAt) - new Date(startedAt)) / 1000);
+
+    if (seconds < 60) {
+      return `${seconds}s`;
+    }
+
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}m ${remainingSeconds}s`;
+  };
+
+  const statusColor = (status) => {
+    if (status === 'failed') return theme.colors.danger;
+    if (status === 'success') return theme.colors.primary;
+    return theme.colors.mutedText; // in-progress or unknown
+  };
+
   if (error && !service) {
     return (
       <>
@@ -60,6 +82,11 @@ function ServiceDetailsPage() {
       </>
     );
   }
+
+  const history = [...(service.deploymentHistory || [])].sort(
+    (a, b) => new Date(b.startedAt) - new Date(a.startedAt)
+  );
+  const historyWithErrors = history.filter((record) => record.error);
 
   return (
     <>
@@ -144,6 +171,49 @@ function ServiceDetailsPage() {
             )}
           </section>
 
+          <section style={styles.section}>
+            <h2 style={styles.sectionTitle}>Deployment History</h2>
+
+            {history.length === 0 ? (
+              <p style={styles.info}>No deployment history yet.</p>
+            ) : (
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.th}>Type</th>
+                    <th style={styles.th}>Status</th>
+                    <th style={styles.th}>Started</th>
+                    <th style={styles.th}>Finished</th>
+                    <th style={styles.th}>Duration</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {history.map((record) => (
+                    <tr key={record.id}>
+                      <td style={styles.td}>{record.type}</td>
+                      <td style={{ ...styles.td, color: statusColor(record.status), fontWeight: '600' }}>
+                        {record.status}
+                      </td>
+                      <td style={styles.td}>{formatDate(record.startedAt)}</td>
+                      <td style={styles.td}>{formatDate(record.finishedAt)}</td>
+                      <td style={styles.td}>{formatDuration(record.startedAt, record.finishedAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {historyWithErrors.length > 0 && (
+              <div style={{ marginTop: '1rem' }}>
+                {historyWithErrors.map((record) => (
+                  <p key={record.id} style={styles.errorBox}>
+                    <strong>{record.type} error ({formatDate(record.startedAt)}):</strong> {record.error}
+                  </p>
+                ))}
+              </div>
+            )}
+          </section>
+
           <div style={styles.footer}>
             <Link to="/dashboard" style={styles.link}>
               Back to Dashboard
@@ -196,6 +266,25 @@ const styles = {
   },
   row: {
     lineHeight: 1.7,
+    color: theme.colors.text
+  },
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    marginTop: '0.5rem'
+  },
+  th: {
+    textAlign: 'left',
+    padding: '0.5rem',
+    borderBottom: `1px solid ${theme.colors.border}`,
+    color: theme.colors.mutedText,
+    fontSize: '0.8rem',
+    textTransform: 'uppercase',
+    letterSpacing: '0.03em'
+  },
+  td: {
+    padding: '0.5rem',
+    borderBottom: `1px solid ${theme.colors.border}`,
     color: theme.colors.text
   },
   footer: {
