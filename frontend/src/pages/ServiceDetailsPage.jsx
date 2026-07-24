@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
@@ -9,20 +9,35 @@ function ServiceDetailsPage() {
   const { id } = useParams();
   const [service, setService] = useState(null);
   const [error, setError] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const fetchService = useCallback(async () => {
+    try {
+      const response = await api.get(`/services/${id}`);
+      setService(response.data);
+      setError('');
+    } catch (err) {
+      setError(err.message);
+    }
+  }, [id]);
 
   useEffect(() => {
-    const fetchService = async () => {
-      try {
-        const response = await api.get(`/services/${id}`);
-        setService(response.data);
-        setError('');
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-
     fetchService();
-  }, [id]);
+  }, [fetchService]);
+
+  const handleRedeploy = async () => {
+    setActionLoading(true);
+    setError('');
+
+    try {
+      await api.post(`/services/${id}/redeploy`);
+      await fetchService();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   const formatDate = (dateValue) => {
     if (!dateValue) {
@@ -95,6 +110,8 @@ function ServiceDetailsPage() {
         <div style={styles.card}>
           <h1 style={styles.title}>{service.name}</h1>
           <p style={styles.subtitle}>Detailed deployment information for this service.</p>
+
+          {error && <p style={styles.errorBox}>{error}</p>}
 
           <section style={styles.section}>
             <h2 style={styles.sectionTitle}>Service Information</h2>
@@ -218,6 +235,17 @@ function ServiceDetailsPage() {
             <Link to="/dashboard" style={styles.link}>
               Back to Dashboard
             </Link>
+
+            <button
+              onClick={handleRedeploy}
+              disabled={actionLoading || service.status === 'building'}
+              style={{
+                ...styles.button,
+                ...(actionLoading || service.status === 'building' ? styles.buttonDisabled : {})
+              }}
+            >
+              {actionLoading || service.status === 'building' ? 'Redeploying...' : 'Redeploy'}
+            </button>
           </div>
         </div>
       </div>
@@ -290,13 +318,27 @@ const styles = {
   footer: {
     marginTop: '1.5rem',
     display: 'flex',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center'
   },
   link: {
     color: theme.colors.primary,
     textDecoration: 'underline',
     fontWeight: '700'
+  },
+  button: {
+    padding: '0.6rem 1.4rem',
+    border: 'none',
+    borderRadius: theme.radius.small,
+    background: theme.colors.primary,
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: '0.95rem',
+    cursor: 'pointer'
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+    cursor: 'not-allowed'
   },
   info: {
     color: theme.colors.mutedText,

@@ -64,16 +64,25 @@
     "name": "empty-history-test",
     "repoUrl": "https://github.com/ahmad-abdulmajid/empty-history-test",
     "port": 4001,
-    "status": "created",
+    "status": "failed",
     "createdAt": "2026-07-24T18:15:40.968Z",
-    "lastDeploymentStartedAt": null,
-    "lastDeploymentFinishedAt": null,
+    "lastDeploymentStartedAt": "2026-07-24T18:22:56.257Z",
+    "lastDeploymentFinishedAt": "2026-07-24T18:24:02.992Z",
     "lastUndeployedAt": null,
-    "deploymentError": null,
-    "localPath": null,
-    "dockerImageName": null,
-    "dockerContainerName": null,
+    "deploymentError": "Cloning into '/home/qardan/cloudbuilder/backend/deployments/1784916940968'...\n",
+    "localPath": "/home/qardan/cloudbuilder/backend/deployments/1784916940968",
+    "dockerImageName": "cloudbuilder-1784916940968",
+    "dockerContainerName": "cloudbuilder-container-1784916940968",
     "serviceUrl": null,
-    "deploymentHistory": []
+    "deploymentHistory": [
+      {
+        "id": "1784917376258-coym79",
+        "type": "deploy",
+        "status": "failed",
+        "startedAt": "2026-07-24T18:22:56.258Z",
+        "finishedAt": "2026-07-24T18:24:02.992Z",
+        "error": "Cloning into '/home/qardan/cloudbuilder/backend/deployments/1784916940968'...\n"
+      }
+    ]
   }
 ]
