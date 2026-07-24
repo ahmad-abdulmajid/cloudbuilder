@@ -58,5 +58,22 @@
         "error": "Dockerfile not found in repository"
       }
     ]
+  },
+  {
+    "id": "1784916940968",
+    "name": "empty-history-test",
+    "repoUrl": "https://github.com/ahmad-abdulmajid/empty-history-test",
+    "port": 4001,
+    "status": "created",
+    "createdAt": "2026-07-24T18:15:40.968Z",
+    "lastDeploymentStartedAt": null,
+    "lastDeploymentFinishedAt": null,
+    "lastUndeployedAt": null,
+    "deploymentError": null,
+    "localPath": null,
+    "dockerImageName": null,
+    "dockerContainerName": null,
+    "serviceUrl": null,
+    "deploymentHistory": []
   }
 ]
