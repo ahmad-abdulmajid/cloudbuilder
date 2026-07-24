@@ -17,7 +17,7 @@ function ServiceDetailsPage() {
         setService(response.data);
         setError('');
       } catch (err) {
-        setError('Failed to load service details');
+        setError(err.message);
       }
     };
 

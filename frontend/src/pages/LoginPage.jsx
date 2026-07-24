@@ -30,7 +30,7 @@ function LoginPage() {
       await api.post('/auth/login', formData);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      setError(err.message);
     }
   };
 
