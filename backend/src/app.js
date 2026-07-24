@@ -3,6 +3,7 @@ const cors = require("cors");
 
 const authRoutes = require("./routes/authRoutes");
 const serviceRoutes = require("./routes/serviceRoutes");
+const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 
@@ -22,5 +23,7 @@ app.get("/health", (req, res) => {
     service: "cloudbuilder-backend"
   });
 });
+
+app.use(errorHandler);
 
 module.exports = app;

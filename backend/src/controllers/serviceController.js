@@ -3,8 +3,10 @@ const {
   startLocalDeployment,
   stopLocalDeployment,
 } = require("../services/deploymentService");
+const AppError = require("../utils/AppError");
+const asyncHandler = require("../utils/asyncHandler");
 
-function createService(req, res) {
+const createService = asyncHandler(async (req, res) => {
   const { name, repoUrl, port } = req.body;
 
   const trimmedName = name?.trim();
@@ -12,17 +14,17 @@ function createService(req, res) {
   const numericPort = Number(port);
 
   if (!trimmedName || !trimmedRepoUrl || !port) {
-    return res.status(400).json({ message: "Name, repo URL, and port are required" });
+    throw new AppError("Name, repo URL, and port are required", 400);
   }
 
   const githubUrlPattern = /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/?$/;
 
   if (!githubUrlPattern.test(trimmedRepoUrl)) {
-    return res.status(400).json({ message: "Repo URL must be a valid GitHub repository link" });
+    throw new AppError("Repo URL must be a valid GitHub repository link", 400);
   }
 
   if (isNaN(numericPort) || numericPort < 1 || numericPort > 65535) {
-    return res.status(400).json({ message: "Port must be a number between 1 and 65535" });
+    throw new AppError("Port must be a number between 1 and 65535", 400);
   }
 
   const services = loadServices();
@@ -32,7 +34,7 @@ function createService(req, res) {
   );
 
   if (duplicateName) {
-    return res.status(409).json({ message: "A service with this name already exists" });
+    throw new AppError("A service with this name already exists", 409);
   }
 
   const duplicateRepo = services.find(
@@ -40,7 +42,7 @@ function createService(req, res) {
   );
 
   if (duplicateRepo) {
-    return res.status(409).json({ message: "A service with this repository URL already exists" });
+    throw new AppError("A service with this repository URL already exists", 409);
   }
 
   const newService = {
@@ -65,41 +67,41 @@ function createService(req, res) {
   saveServices(services);
 
   return res.status(201).json(newService);
-}
+});
 
-function getAllServices(req, res) {
+const getAllServices = asyncHandler(async (req, res) => {
   const services = loadServices();
   return res.status(200).json(services);
-}
+});
 
-function getServiceById(req, res) {
+const getServiceById = asyncHandler(async (req, res) => {
   const services = loadServices();
   const service = services.find((s) => s.id === req.params.id);
 
   if (!service) {
-    return res.status(404).json({ message: "Service not found" });
+    throw new AppError("Service not found", 404);
   }
 
   return res.status(200).json(service);
-}
+});
 
-function updateServiceStatus(req, res) {
+const updateServiceStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
   const allowedStatuses = ["created", "building", "pushed", "deployed", "failed"];
 
   if (!status) {
-    return res.status(400).json({ message: "Status is required" });
+    throw new AppError("Status is required", 400);
   }
 
   if (!allowedStatuses.includes(status)) {
-    return res.status(400).json({ message: "Invalid status value" });
+    throw new AppError("Invalid status value", 400);
   }
 
   const services = loadServices();
   const service = services.find((s) => s.id === req.params.id);
 
   if (!service) {
-    return res.status(404).json({ message: "Service not found" });
+    throw new AppError("Service not found", 404);
   }
 
   service.status = status;
@@ -109,14 +111,14 @@ function updateServiceStatus(req, res) {
     message: "Status updated successfully",
     service,
   });
-}
+});
 
-function deployService(req, res) {
+const deployService = asyncHandler(async (req, res) => {
   const services = loadServices();
   const service = services.find((s) => s.id === req.params.id);
 
   if (!service) {
-    return res.status(404).json({ message: "Service not found" });
+    throw new AppError("Service not found", 404);
   }
 
   service.status = "building";
@@ -132,14 +134,14 @@ function deployService(req, res) {
     message: "Deployment started",
     service,
   });
-}
+});
 
-function redeployService(req, res) {
+const redeployService = asyncHandler(async (req, res) => {
   const services = loadServices();
   const service = services.find((s) => s.id === req.params.id);
 
   if (!service) {
-    return res.status(404).json({ message: "Service not found" });
+    throw new AppError("Service not found", 404);
   }
 
   service.status = "building";
@@ -155,20 +157,18 @@ function redeployService(req, res) {
     message: "Redeployment started",
     service,
   });
-}
+});
 
-async function stopService(req, res) {
+const stopService = asyncHandler(async (req, res) => {
   const services = loadServices();
   const service = services.find((s) => s.id === req.params.id);
 
   if (!service) {
-    return res.status(404).json({ message: "Service not found" });
+    throw new AppError("Service not found", 404);
   }
 
   if (service.status !== "deployed") {
-    return res.status(400).json({
-      message: "Only deployed services can be undeployed",
-    });
+    throw new AppError("Only deployed services can be undeployed", 400);
   }
 
   const updatedService = await stopLocalDeployment(service);
@@ -177,14 +177,14 @@ async function stopService(req, res) {
     message: "Service undeployed successfully",
     service: updatedService,
   });
-}
+});
 
-async function deleteService(req, res) {
+const deleteService = asyncHandler(async (req, res) => {
   const services = loadServices();
   const serviceIndex = services.findIndex((s) => s.id === req.params.id);
 
   if (serviceIndex === -1) {
-    return res.status(404).json({ message: "Service not found" });
+    throw new AppError("Service not found", 404);
   }
 
   const serviceToDelete = services[serviceIndex];
@@ -197,7 +197,7 @@ async function deleteService(req, res) {
   const latestServiceIndex = latestServices.findIndex((s) => s.id === req.params.id);
 
   if (latestServiceIndex === -1) {
-    return res.status(404).json({ message: "Service not found after cleanup" });
+    throw new AppError("Service not found after cleanup", 404);
   }
 
   const deletedService = latestServices[latestServiceIndex];
@@ -208,7 +208,7 @@ async function deleteService(req, res) {
     message: "Service deleted successfully",
     service: deletedService,
   });
-}
+});
 
 module.exports = {
   createService,

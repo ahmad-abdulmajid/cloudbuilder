@@ -24,7 +24,7 @@ function DashboardPage() {
 
       return response.data;
     } catch (err) {
-      setError('Failed to load services');
+      setError(err.message);
       return [];
     } finally {
       if (showLoading) {
@@ -59,7 +59,7 @@ function DashboardPage() {
       } catch (err) {
         clearInterval(intervalId);
         setDeployingId(null);
-        setError('Failed to check deployment status');
+        setError(err.message);
       }
     }, 3000);
   };
@@ -79,7 +79,7 @@ function DashboardPage() {
 
       pollServiceStatus(id);
     } catch (err) {
-      setError('Failed to deploy service');
+      setError(err.message);
       setDeployingId(null);
     }
   };
@@ -103,7 +103,7 @@ function DashboardPage() {
         )
       );
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to undeploy service');
+      setError(err.message);
     } finally {
       setStoppingId(null);
     }
@@ -122,7 +122,7 @@ function DashboardPage() {
         prevServices.filter((service) => service.id !== id)
       );
     } catch (err) {
-      setError('Failed to delete service');
+      setError(err.message);
     }
   };
 
