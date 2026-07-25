@@ -27,14 +27,15 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '1rem 2rem',
-    background: theme.colors.text,
-    color: '#fff',
+    background: theme.colors.cardBackground,
+    color: theme.colors.text,
     borderBottom: `1px solid ${theme.colors.border}`
   },
   brand: {
     fontSize: '1.3rem',
     fontWeight: 'bold',
-    letterSpacing: '0.3px'
+    letterSpacing: '0.3px',
+    color: theme.colors.text
   },
   links: {
     display: 'flex',
@@ -42,13 +43,13 @@ const styles = {
     gap: '1rem'
   },
   link: {
-    color: '#fff',
+    color: theme.colors.text,
     textDecoration: 'none',
     fontWeight: '600'
   },
   button: {
-    background: theme.colors.cardBackground,
-    color: theme.colors.text,
+    background: theme.colors.primary,
+    color: '#fff',
     border: 'none',
     borderRadius: theme.radius.small,
     padding: '0.5rem 1rem',

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
-import StatusBadge from '../components/StatusBadge';
+import DeploymentStatus from '../components/DeploymentStatus';
 import theme from '../styles/theme';
 
 function ServiceDetailsPage() {
@@ -144,7 +144,7 @@ function ServiceDetailsPage() {
             <p style={styles.row}><strong>Port:</strong> {service.port}</p>
 
             <p style={styles.row}>
-              <strong>Status:</strong> <StatusBadge status={service.status} />
+              <strong>Status:</strong> <DeploymentStatus status={service.status} />
             </p>
 
             <p style={styles.row}><strong>Created At:</strong> {formatDate(service.createdAt)}</p>

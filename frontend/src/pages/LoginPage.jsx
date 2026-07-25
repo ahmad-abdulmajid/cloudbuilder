@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import theme from '../styles/theme';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ function LoginPage() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h1>Login</h1>
+        <h1 style={styles.title}>Login</h1>
         <form onSubmit={handleSubmit} style={styles.form}>
           <input
             type="email"
@@ -69,15 +70,20 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    background: '#f4f4f4'
+    background: theme.colors.background
   },
   card: {
-    background: '#ffffff',
+    background: theme.colors.cardBackground,
     padding: '2rem',
-    borderRadius: '12px',
+    borderRadius: theme.radius.medium,
     width: '350px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-    color: '#222'
+    boxShadow: theme.shadow.card,
+    border: `1px solid ${theme.colors.border}`,
+    color: theme.colors.text
+  },
+  title: {
+    color: theme.colors.text,
+    marginTop: 0
   },
   form: {
     display: 'flex',
@@ -87,21 +93,28 @@ const styles = {
   input: {
     padding: '0.8rem',
     fontSize: '1rem',
-    background: '#fff',
-    color: '#222',
-    border: '1px solid #ccc'
+    background: theme.colors.softBackground,
+    color: theme.colors.text,
+    border: `1px solid ${theme.colors.border}`,
+    borderRadius: theme.radius.small
   },
   button: {
     padding: '0.8rem',
     fontSize: '1rem',
     cursor: 'pointer',
-    background: '#222',
+    background: theme.colors.primary,
     color: '#fff',
     border: 'none',
-    borderRadius: '8px'
+    borderRadius: theme.radius.small,
+    fontWeight: '600'
   },
   error: {
-    color: 'red'
+    color: theme.colors.danger,
+    background: theme.colors.dangerSoft,
+    padding: '0.6rem',
+    borderRadius: theme.radius.small,
+    border: `1px solid ${theme.colors.danger}`,
+    margin: 0
   }
 };
 

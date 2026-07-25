@@ -1,28 +1,28 @@
 const theme = {
   colors: {
-    primary: '#2563eb',
-    primaryDark: '#1d4ed8',
+    primary: '#3b82f6',
+    primaryDark: '#60a5fa',
 
-    background: '#f8fafc',
-    cardBackground: '#ffffff',
-    softBackground: '#f1f5f9',
+    background: '#0f172a',
+    cardBackground: '#1e293b',
+    softBackground: '#172033',
 
-    text: '#0f172a',
-    mutedText: '#64748b',
+    text: '#f1f5f9',
+    mutedText: '#94a3b8',
 
-    border: '#e2e8f0',
+    border: '#334155',
 
-    success: '#16a34a',
-    successSoft: '#dcfce7',
+    success: '#4ade80',
+    successSoft: '#14532d',
 
-    warning: '#f97316',
-    warningSoft: '#ffedd5',
+    warning: '#fb923c',
+    warningSoft: '#7c2d12',
 
-    danger: '#dc2626',
-    dangerSoft: '#fee2e2',
+    danger: '#f87171',
+    dangerSoft: '#7f1d1d',
 
-    info: '#0284c7',
-    infoSoft: '#e0f2fe'
+    info: '#38bdf8',
+    infoSoft: '#0c4a6e'
   },
 
   radius: {
@@ -32,7 +32,7 @@ const theme = {
   },
 
   shadow: {
-    card: '0 10px 25px rgba(15, 23, 42, 0.08)'
+    card: '0 10px 25px rgba(0, 0, 0, 0.4)'
   },
 
   spacing: {

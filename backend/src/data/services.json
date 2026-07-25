@@ -4,16 +4,16 @@
     "name": "REPO",
     "repoUrl": "https://github.com/ahmad-abdulmajid/cloudbuilder-demo-app",
     "port": 3000,
-    "status": "deployed",
+    "status": "created",
     "createdAt": "2026-05-19T14:55:49.110Z",
-    "lastDeploymentStartedAt": "2026-07-25T19:10:14.590Z",
-    "lastDeploymentFinishedAt": "2026-07-25T19:10:23.764Z",
-    "lastUndeployedAt": "2026-05-19T14:56:04.699Z",
+    "lastDeploymentStartedAt": "2026-07-25T19:53:40.378Z",
+    "lastDeploymentFinishedAt": "2026-07-25T19:53:48.930Z",
+    "lastUndeployedAt": "2026-07-25T19:54:34.776Z",
     "deploymentError": null,
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1779202549110",
     "dockerImageName": "cloudbuilder-1779202549110",
-    "dockerContainerName": "cloudbuilder-container-1779202549110",
-    "serviceUrl": "http://localhost:3000",
+    "dockerContainerName": null,
+    "serviceUrl": null,
     "deploymentHistory": [
       {
         "id": "1784726660887-c5c0q1",
@@ -29,6 +29,62 @@
         "status": "success",
         "startedAt": "2026-07-25T19:10:14.590Z",
         "finishedAt": "2026-07-25T19:10:23.764Z",
+        "error": null
+      },
+      {
+        "id": "1785007875053-zewi51",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-25T19:31:15.053Z",
+        "finishedAt": "2026-07-25T19:31:15.347Z",
+        "error": null
+      },
+      {
+        "id": "1785008918470-z15059",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-25T19:48:38.470Z",
+        "finishedAt": "2026-07-25T19:48:51.169Z",
+        "error": null
+      },
+      {
+        "id": "1785008941211-4v9hm2",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-25T19:49:01.211Z",
+        "finishedAt": "2026-07-25T19:49:01.459Z",
+        "error": null
+      },
+      {
+        "id": "1785008947854-8wntwd",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-25T19:49:07.854Z",
+        "finishedAt": "2026-07-25T19:49:18.465Z",
+        "error": null
+      },
+      {
+        "id": "1785009209285-lzq76x",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-25T19:53:29.285Z",
+        "finishedAt": "2026-07-25T19:53:29.540Z",
+        "error": null
+      },
+      {
+        "id": "1785009220378-7nofa7",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-25T19:53:40.378Z",
+        "finishedAt": "2026-07-25T19:53:48.930Z",
+        "error": null
+      },
+      {
+        "id": "1785009274500-3qgnaa",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-25T19:54:34.500Z",
+        "finishedAt": "2026-07-25T19:54:34.776Z",
         "error": null
       }
     ]
