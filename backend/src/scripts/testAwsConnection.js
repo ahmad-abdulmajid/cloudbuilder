@@ -10,14 +10,18 @@ const testConnection = async () => {
   try {
     const ecrResult = await ecrClient.send(
       new DescribeRepositoriesCommand({
-        repositoryNames: [awsSettings.ecrRepositoryName],
+        repositoryNames: [
+          awsSettings.ecrRepositoryName,
+          process.env.ECR_SERVICES_REPOSITORY_NAME,
+        ],
       })
     );
 
-    const repo = ecrResult.repositories[0];
     console.log("ECR connection OK");
-    console.log(`  Repository: ${repo.repositoryName}`);
-    console.log(`  URI: ${repo.repositoryUri}`);
+
+    ecrResult.repositories.forEach((repo) => {
+      console.log(`  ${repo.repositoryName}: ${repo.repositoryUri}`);
+    });
   } catch (error) {
     console.error("ECR connection FAILED");
     console.error(`  ${error.name}: ${error.message}`);
