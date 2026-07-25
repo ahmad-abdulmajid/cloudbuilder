@@ -25,6 +25,19 @@ function ServiceDetailsPage() {
     fetchService();
   }, [fetchService]);
 
+  // Poll while a deployment is in progress
+  useEffect(() => {
+    if (service?.status !== 'building') {
+      return;
+    }
+
+    const intervalId = setInterval(() => {
+      fetchService();
+    }, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [service?.status, fetchService]);
+
   const handleRedeploy = async () => {
     setActionLoading(true);
     setError('');

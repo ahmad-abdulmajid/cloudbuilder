@@ -4,16 +4,16 @@
     "name": "REPO",
     "repoUrl": "https://github.com/ahmad-abdulmajid/cloudbuilder-demo-app",
     "port": 3000,
-    "status": "failed",
+    "status": "deployed",
     "createdAt": "2026-05-19T14:55:49.110Z",
-    "lastDeploymentStartedAt": "2026-07-22T13:24:20.886Z",
-    "lastDeploymentFinishedAt": "2026-07-22T13:24:23.935Z",
+    "lastDeploymentStartedAt": "2026-07-25T19:10:14.590Z",
+    "lastDeploymentFinishedAt": "2026-07-25T19:10:23.764Z",
     "lastUndeployedAt": "2026-05-19T14:56:04.699Z",
-    "deploymentError": "Command failed: docker build -t cloudbuilder-1779202549110 .\n",
+    "deploymentError": null,
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1779202549110",
     "dockerImageName": "cloudbuilder-1779202549110",
     "dockerContainerName": "cloudbuilder-container-1779202549110",
-    "serviceUrl": null,
+    "serviceUrl": "http://localhost:3000",
     "deploymentHistory": [
       {
         "id": "1784726660887-c5c0q1",
@@ -22,6 +22,14 @@
         "startedAt": "2026-07-22T13:24:20.887Z",
         "finishedAt": "2026-07-22T13:24:23.935Z",
         "error": "Command failed: docker build -t cloudbuilder-1779202549110 .\n"
+      },
+      {
+        "id": "1785006614590-9qpnzd",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-25T19:10:14.590Z",
+        "finishedAt": "2026-07-25T19:10:23.764Z",
+        "error": null
       }
     ]
   },
@@ -64,12 +72,12 @@
     "name": "empty-history-test",
     "repoUrl": "https://github.com/ahmad-abdulmajid/empty-history-test",
     "port": 4001,
-    "status": "failed",
+    "status": "building",
     "createdAt": "2026-07-24T18:15:40.968Z",
-    "lastDeploymentStartedAt": "2026-07-24T18:22:56.257Z",
-    "lastDeploymentFinishedAt": "2026-07-24T18:24:02.992Z",
+    "lastDeploymentStartedAt": "2026-07-24T18:31:47.625Z",
+    "lastDeploymentFinishedAt": null,
     "lastUndeployedAt": null,
-    "deploymentError": "Cloning into '/home/qardan/cloudbuilder/backend/deployments/1784916940968'...\n",
+    "deploymentError": null,
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1784916940968",
     "dockerImageName": "cloudbuilder-1784916940968",
     "dockerContainerName": "cloudbuilder-container-1784916940968",
@@ -82,6 +90,22 @@
         "startedAt": "2026-07-24T18:22:56.258Z",
         "finishedAt": "2026-07-24T18:24:02.992Z",
         "error": "Cloning into '/home/qardan/cloudbuilder/backend/deployments/1784916940968'...\n"
+      },
+      {
+        "id": "1784917603220-4q1g1s",
+        "type": "deploy",
+        "status": "failed",
+        "startedAt": "2026-07-24T18:26:43.220Z",
+        "finishedAt": "2026-07-24T18:27:49.335Z",
+        "error": "Cloning into '/home/qardan/cloudbuilder/backend/deployments/1784916940968'...\n"
+      },
+      {
+        "id": "1784917907626-5cms1s",
+        "type": "deploy",
+        "status": "in-progress",
+        "startedAt": "2026-07-24T18:31:47.626Z",
+        "finishedAt": null,
+        "error": null
       }
     ]
   }
