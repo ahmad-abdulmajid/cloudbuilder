@@ -72,12 +72,12 @@
     "name": "empty-history-test",
     "repoUrl": "https://github.com/ahmad-abdulmajid/empty-history-test",
     "port": 4001,
-    "status": "building",
+    "status": "failed",
     "createdAt": "2026-07-24T18:15:40.968Z",
     "lastDeploymentStartedAt": "2026-07-24T18:31:47.625Z",
-    "lastDeploymentFinishedAt": null,
+    "lastDeploymentFinishedAt": "2026-07-25T19:17:30.077Z",
     "lastUndeployedAt": null,
-    "deploymentError": null,
+    "deploymentError": "Deployment interrupted by server restart",
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1784916940968",
     "dockerImageName": "cloudbuilder-1784916940968",
     "dockerContainerName": "cloudbuilder-container-1784916940968",
@@ -102,10 +102,10 @@
       {
         "id": "1784917907626-5cms1s",
         "type": "deploy",
-        "status": "in-progress",
+        "status": "failed",
         "startedAt": "2026-07-24T18:31:47.626Z",
-        "finishedAt": null,
-        "error": null
+        "finishedAt": "2026-07-25T19:17:30.077Z",
+        "error": "Deployment interrupted by server restart"
       }
     ]
   }
