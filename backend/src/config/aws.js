@@ -22,6 +22,7 @@ const awsSettings = {
   region,
   accountId: process.env.AWS_ACCOUNT_ID,
   ecrRepositoryName: process.env.ECR_REPOSITORY_NAME,
+  ecrServicesRepositoryName: process.env.ECR_SERVICES_REPOSITORY_NAME,
   ecsClusterName: process.env.ECS_CLUSTER_NAME,
   executionRoleArn: process.env.ECS_EXECUTION_ROLE_ARN,
 };
