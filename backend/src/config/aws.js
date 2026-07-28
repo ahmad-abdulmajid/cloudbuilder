@@ -25,6 +25,7 @@ const awsSettings = {
   ecrServicesRepositoryName: process.env.ECR_SERVICES_REPOSITORY_NAME,
   ecsClusterName: process.env.ECS_CLUSTER_NAME,
   executionRoleArn: process.env.ECS_EXECUTION_ROLE_ARN,
+  logGroupName: process.env.ECS_LOG_GROUP_NAME,
 };
 
 module.exports = {
