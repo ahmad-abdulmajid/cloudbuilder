@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
-import DeploymentStatus from '../components/DeploymentStatus';
+import DeploymentStatus from '../components/DeploymentStatus.jsx';
 import theme from '../styles/theme';
 
 function ServiceDetailsPage() {

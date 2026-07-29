@@ -26,6 +26,8 @@ const awsSettings = {
   ecsClusterName: process.env.ECS_CLUSTER_NAME,
   executionRoleArn: process.env.ECS_EXECUTION_ROLE_ARN,
   logGroupName: process.env.ECS_LOG_GROUP_NAME,
+  subnetIds: (process.env.ECS_SUBNET_IDS || "").split(",").filter(Boolean),
+  securityGroupId: process.env.ECS_SECURITY_GROUP_ID,
 };
 
 module.exports = {
