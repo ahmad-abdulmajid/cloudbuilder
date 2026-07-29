@@ -3,15 +3,35 @@ const {
   startLocalDeployment,
   stopLocalDeployment,
 } = require("../services/deploymentService");
+const {
+  startAwsDeployment,
+  stopAwsDeployment,
+} = require("../services/awsDeploymentFlow");
 const AppError = require("../utils/AppError");
 const asyncHandler = require("../utils/asyncHandler");
 
+const ALLOWED_TARGETS = ["local", "aws"];
+
+/**
+ * Picks the deployment implementation for a service.
+ * Services created before the target field existed have no target,
+ * so anything that is not explicitly "aws" falls back to local.
+ */
+function getDeploymentHandlers(service) {
+  if (service.target === "aws") {
+    return { start: startAwsDeployment, stop: stopAwsDeployment };
+  }
+
+  return { start: startLocalDeployment, stop: stopLocalDeployment };
+}
+
 const createService = asyncHandler(async (req, res) => {
-  const { name, repoUrl, port } = req.body;
+  const { name, repoUrl, port, target } = req.body;
 
   const trimmedName = name?.trim();
   const trimmedRepoUrl = repoUrl?.trim();
   const numericPort = Number(port);
+  const selectedTarget = target || "local";
 
   if (!trimmedName || !trimmedRepoUrl || !port) {
     throw new AppError("Name, repo URL, and port are required", 400);
@@ -25,6 +45,10 @@ const createService = asyncHandler(async (req, res) => {
 
   if (isNaN(numericPort) || numericPort < 1 || numericPort > 65535) {
     throw new AppError("Port must be a number between 1 and 65535", 400);
+  }
+
+  if (!ALLOWED_TARGETS.includes(selectedTarget)) {
+    throw new AppError("Target must be either 'local' or 'aws'", 400);
   }
 
   const services = loadServices();
@@ -50,6 +74,7 @@ const createService = asyncHandler(async (req, res) => {
     name: trimmedName,
     repoUrl: trimmedRepoUrl,
     port: numericPort,
+    target: selectedTarget,
     status: "created",
     createdAt: new Date().toISOString(),
     lastDeploymentStartedAt: null,
@@ -60,6 +85,11 @@ const createService = asyncHandler(async (req, res) => {
     dockerImageName: null,
     dockerContainerName: null,
     serviceUrl: null,
+    // AWS-only fields, unused when target is "local"
+    ecrImageUri: null,
+    taskDefinitionArn: null,
+    taskArn: null,
+    publicIp: null,
     deploymentHistory: [],
   };
 
@@ -128,7 +158,9 @@ const deployService = asyncHandler(async (req, res) => {
 
   saveServices(services);
 
-  startLocalDeployment({ ...service });
+  const { start } = getDeploymentHandlers(service);
+
+  start({ ...service });
 
   return res.status(202).json({
     message: "Deployment started",
@@ -151,7 +183,9 @@ const redeployService = asyncHandler(async (req, res) => {
 
   saveServices(services);
 
-  startLocalDeployment({ ...service });
+  const { start } = getDeploymentHandlers(service);
+
+  start({ ...service });
 
   return res.status(202).json({
     message: "Redeployment started",
@@ -171,7 +205,9 @@ const stopService = asyncHandler(async (req, res) => {
     throw new AppError("Only deployed services can be undeployed", 400);
   }
 
-  const updatedService = await stopLocalDeployment(service);
+  const { stop } = getDeploymentHandlers(service);
+
+  const updatedService = await stop(service);
 
   return res.status(200).json({
     message: "Service undeployed successfully",
@@ -188,9 +224,15 @@ const deleteService = asyncHandler(async (req, res) => {
   }
 
   const serviceToDelete = services[serviceIndex];
+  const { stop } = getDeploymentHandlers(serviceToDelete);
 
-  if (serviceToDelete.dockerContainerName || serviceToDelete.status === "deployed") {
-    await stopLocalDeployment(serviceToDelete);
+  const hasRunningWorkload =
+    serviceToDelete.dockerContainerName ||
+    serviceToDelete.taskArn ||
+    serviceToDelete.status === "deployed";
+
+  if (hasRunningWorkload) {
+    await stop(serviceToDelete);
   }
 
   const latestServices = loadServices();

@@ -4,16 +4,16 @@
     "name": "REPO",
     "repoUrl": "https://github.com/ahmad-abdulmajid/cloudbuilder-demo-app",
     "port": 3000,
-    "status": "deployed",
+    "status": "created",
     "createdAt": "2026-05-19T14:55:49.110Z",
-    "lastDeploymentStartedAt": "2026-07-29T18:46:57.944Z",
-    "lastDeploymentFinishedAt": "2026-07-29T18:47:08.654Z",
-    "lastUndeployedAt": "2026-07-25T19:54:34.776Z",
+    "lastDeploymentStartedAt": "2026-07-29T19:02:28.781Z",
+    "lastDeploymentFinishedAt": "2026-07-29T19:02:58.331Z",
+    "lastUndeployedAt": "2026-07-29T19:03:41.617Z",
     "deploymentError": null,
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1779202549110",
     "dockerImageName": "cloudbuilder-1779202549110",
     "dockerContainerName": "cloudbuilder-container-1779202549110",
-    "serviceUrl": "http://localhost:3000",
+    "serviceUrl": null,
     "deploymentHistory": [
       {
         "id": "1784726660887-c5c0q1",
@@ -94,8 +94,69 @@
         "startedAt": "2026-07-29T18:46:57.944Z",
         "finishedAt": "2026-07-29T18:47:08.654Z",
         "error": null
+      },
+      {
+        "id": "1785350889151-s8968x",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-29T18:48:09.151Z",
+        "finishedAt": "2026-07-29T18:48:09.436Z",
+        "error": null
+      },
+      {
+        "id": "1785351137231-rv6t9b",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-29T18:52:17.231Z",
+        "finishedAt": "2026-07-29T18:52:23.332Z",
+        "error": null
+      },
+      {
+        "id": "1785351305048-cb0hvt",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-29T18:55:05.048Z",
+        "finishedAt": "2026-07-29T18:55:05.338Z",
+        "error": null
+      },
+      {
+        "id": "1785351372351-ky6z8b",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-29T18:56:12.351Z",
+        "finishedAt": "2026-07-29T18:56:16.731Z",
+        "error": null
+      },
+      {
+        "id": "1785351739366-ncfxy1",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-29T19:02:19.366Z",
+        "finishedAt": "2026-07-29T19:02:19.366Z",
+        "error": null
+      },
+      {
+        "id": "1785351748781-a72tbc",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-29T19:02:28.781Z",
+        "finishedAt": "2026-07-29T19:02:58.331Z",
+        "error": null
+      },
+      {
+        "id": "1785351820997-u2gjia",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-29T19:03:40.997Z",
+        "finishedAt": "2026-07-29T19:03:41.617Z",
+        "error": null
       }
-    ]
+    ],
+    "target": "aws",
+    "publicIp": null,
+    "taskArn": null,
+    "ecrImageUri": "349326897252.dkr.ecr.eu-central-1.amazonaws.com/cloudbuilder-services:service-1779202549110",
+    "taskDefinitionArn": "arn:aws:ecs:eu-central-1:349326897252:task-definition/cloudbuilder-service-1779202549110:3"
   },
   {
     "id": "1779412905612",
