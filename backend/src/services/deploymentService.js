@@ -57,6 +57,10 @@ function getDockerContainerName(service) {
   return `cloudbuilder-container-${service.id}`.toLowerCase();
 }
 
+function getServiceDeployPath(service) {
+  return path.join(deploymentsRoot, service.id);
+}
+
 async function removeExistingContainer(containerName) {
   try {
     await runCommand("docker", ["rm", "-f", containerName], {
@@ -67,8 +71,61 @@ async function removeExistingContainer(containerName) {
   }
 }
 
+/**
+ * Shared first half of every deployment, local or cloud:
+ * clone the repository, verify it contains a Dockerfile, build the image.
+ *
+ * Throws on failure. The caller is responsible for recording the error
+ * against the service and its deployment history.
+ *
+ * @param {Object} service
+ * @returns {Promise<{serviceDeployPath: string, imageName: string}>}
+ */
+async function prepareBuild(service) {
+  const serviceDeployPath = getServiceDeployPath(service);
+  const imageName = getDockerImageName(service);
+
+  if (!fs.existsSync(deploymentsRoot)) {
+    fs.mkdirSync(deploymentsRoot, { recursive: true });
+  }
+
+  if (fs.existsSync(serviceDeployPath)) {
+    fs.rmSync(serviceDeployPath, { recursive: true, force: true });
+  }
+
+  console.log(`Cloning repository: ${service.repoUrl}`);
+
+  await runCommand("git", [
+    "clone",
+    "--depth",
+    "1",
+    service.repoUrl,
+    serviceDeployPath,
+  ]);
+
+  console.log("Repository cloned successfully");
+
+  const dockerfilePath = path.join(serviceDeployPath, "Dockerfile");
+
+  if (!fs.existsSync(dockerfilePath)) {
+    throw new Error("Dockerfile not found in repository");
+  }
+
+  console.log("Dockerfile found");
+  console.log(`Building Docker image: ${imageName}`);
+
+  await runCommand("docker", ["build", "-t", imageName, "."], {
+    cwd: serviceDeployPath,
+    timeout: 120000,
+  });
+
+  console.log("Docker image built successfully");
+
+  return { serviceDeployPath, imageName };
+}
+
 async function startLocalDeployment(service) {
-  const serviceDeployPath = path.join(deploymentsRoot, service.id);
+  const serviceDeployPath = getServiceDeployPath(service);
   const imageName = getDockerImageName(service);
   const containerName = getDockerContainerName(service);
 
@@ -86,59 +143,7 @@ async function startLocalDeployment(service) {
   try {
     console.log(`Starting deployment for service: ${service.name}`);
 
-    if (!fs.existsSync(deploymentsRoot)) {
-      fs.mkdirSync(deploymentsRoot, { recursive: true });
-    }
-
-    if (fs.existsSync(serviceDeployPath)) {
-      fs.rmSync(serviceDeployPath, { recursive: true, force: true });
-    }
-
-    console.log(`Cloning repository: ${service.repoUrl}`);
-
-    await runCommand("git", [
-      "clone",
-      "--depth",
-      "1",
-      service.repoUrl,
-      serviceDeployPath,
-    ]);
-
-    console.log("Repository cloned successfully");
-
-    const dockerfilePath = path.join(serviceDeployPath, "Dockerfile");
-
-    if (!fs.existsSync(dockerfilePath)) {
-      console.log("Deployment failed: Dockerfile not found");
-
-      const finishedAt = new Date().toISOString();
-      const errorMessage = "Dockerfile not found in repository";
-
-      updateService(service.id, {
-        status: "failed",
-        lastDeploymentFinishedAt: finishedAt,
-        deploymentError: errorMessage,
-        localPath: serviceDeployPath,
-      });
-
-      updateDeploymentHistoryEntry(service.id, historyRecord.id, {
-        status: "failed",
-        finishedAt,
-        error: errorMessage,
-      });
-
-      return;
-    }
-
-    console.log("Dockerfile found");
-    console.log(`Building Docker image: ${imageName}`);
-
-    await runCommand("docker", ["build", "-t", imageName, "."], {
-      cwd: serviceDeployPath,
-      timeout: 120000,
-    });
-
-    console.log("Docker image built successfully");
+    await prepareBuild(service);
 
     console.log(`Removing old container if it exists: ${containerName}`);
     await removeExistingContainer(containerName);
@@ -178,7 +183,7 @@ async function startLocalDeployment(service) {
     console.log("Deployment failed:", error);
 
     const finishedAt = new Date().toISOString();
-    const errorMessage = String(error);
+    const errorMessage = error?.message || String(error);
 
     updateService(service.id, {
       status: "failed",
@@ -240,7 +245,7 @@ async function stopLocalDeployment(service) {
     console.log("Undeploy failed:", error);
 
     const finishedAt = new Date().toISOString();
-    const errorMessage = String(error);
+    const errorMessage = error?.message || String(error);
 
     const updatedService = updateService(service.id, {
       status: "failed",
@@ -259,6 +264,11 @@ async function stopLocalDeployment(service) {
 }
 
 module.exports = {
+  prepareBuild,
+  updateService,
+  getDockerImageName,
+  getDockerContainerName,
+  getServiceDeployPath,
   startLocalDeployment,
   stopLocalDeployment,
 };
