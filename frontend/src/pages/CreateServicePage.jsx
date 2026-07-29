@@ -4,13 +4,19 @@ import api from '../services/api';
 import Navbar from '../components/Navbar';
 import theme from '../styles/theme';
 
+// The shared security group only allows inbound traffic on this range,
+// so an AWS service outside it would deploy but be unreachable.
+const AWS_MIN_PORT = 3000;
+const AWS_MAX_PORT = 9000;
+
 function CreateServicePage() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: '',
     repoUrl: '',
-    port: ''
+    port: '',
+    target: 'local'
   });
 
   const [error, setError] = useState('');
@@ -31,15 +37,27 @@ function CreateServicePage() {
       return;
     }
 
-    if (isNaN(Number(formData.port))) {
+    const numericPort = Number(formData.port);
+
+    if (isNaN(numericPort)) {
       setError('Port must be a valid number');
+      return;
+    }
+
+    if (
+      formData.target === 'aws' &&
+      (numericPort < AWS_MIN_PORT || numericPort > AWS_MAX_PORT)
+    ) {
+      setError(
+        `AWS deployments must use a port between ${AWS_MIN_PORT} and ${AWS_MAX_PORT}`
+      );
       return;
     }
 
     try {
       await api.post('/services', {
         ...formData,
-        port: Number(formData.port)
+        port: numericPort
       });
 
       navigate('/dashboard');
@@ -84,7 +102,7 @@ function CreateServicePage() {
                 style={styles.input}
               />
               <small style={styles.helperText}>
-                Use a public GitHub repository for the current local deployment flow.
+                Use a public GitHub repository that contains a Dockerfile in its root.
               </small>
             </div>
 
@@ -102,6 +120,32 @@ function CreateServicePage() {
                 This should match the port exposed by the application inside its Dockerfile.
               </small>
             </div>
+
+            <div style={styles.field}>
+              <label style={styles.label}>Deployment Target</label>
+              <select
+                name="target"
+                value={formData.target}
+                onChange={handleChange}
+                style={styles.input}
+              >
+                <option value="local">Local Docker</option>
+                <option value="aws">AWS Fargate</option>
+              </select>
+              <small style={styles.helperText}>
+                Local runs the container on this machine. AWS pushes the image to
+                Amazon ECR and runs it on ECS Fargate.
+              </small>
+            </div>
+
+            {formData.target === 'aws' && (
+              <div style={styles.noticeBox}>
+                <strong>AWS deployments cost money.</strong> Each deployment starts a
+                Fargate task billed per second while it runs. Undeploy the service when
+                you are finished with it. Ports must be between {AWS_MIN_PORT} and{' '}
+                {AWS_MAX_PORT}.
+              </div>
+            )}
 
             <button type="submit" style={styles.button}>
               Create Service
@@ -173,6 +217,13 @@ const styles = {
   helperText: {
     color: theme.colors.mutedText,
     lineHeight: 1.4
+  },
+  noticeBox: {
+    color: theme.colors.text,
+    border: `1px solid ${theme.colors.primary}`,
+    borderRadius: theme.radius.small,
+    padding: '0.8rem',
+    lineHeight: 1.5
   },
   button: {
     padding: '0.85rem',
