@@ -12,6 +12,12 @@ const asyncHandler = require("../utils/asyncHandler");
 
 const ALLOWED_TARGETS = ["local", "aws"];
 
+// Mirrors the inbound rule on security group sg-011aac7e019238b2e, which
+// allows TCP 3000-9000 from anywhere. A task on any other port launches and
+// reports healthy, but nothing can reach it — and it bills the whole time.
+const AWS_MIN_PORT = 3000;
+const AWS_MAX_PORT = 9000;
+
 /**
  * Normalizes a deployment target.
  * Services created before the target field existed have no target,
@@ -19,6 +25,24 @@ const ALLOWED_TARGETS = ["local", "aws"];
  */
 function resolveTarget(target) {
   return target === "aws" ? "aws" : "local";
+}
+
+/**
+ * Rejects ports the AWS security group would silently block.
+ * Local Docker publishes to the host directly, so it has no such limit.
+ */
+function assertPortAllowedForTarget(port, target) {
+  if (resolveTarget(target) !== "aws") {
+    return;
+  }
+
+  if (port < AWS_MIN_PORT || port > AWS_MAX_PORT) {
+    throw new AppError(
+      `AWS deployments must use a port between ${AWS_MIN_PORT} and ${AWS_MAX_PORT}. ` +
+        `Port ${port} is not open on the security group and the service would be unreachable.`,
+      400
+    );
+  }
 }
 
 /**
@@ -72,6 +96,8 @@ const createService = asyncHandler(async (req, res) => {
   if (!ALLOWED_TARGETS.includes(selectedTarget)) {
     throw new AppError("Target must be either 'local' or 'aws'", 400);
   }
+
+  assertPortAllowedForTarget(numericPort, selectedTarget);
 
   const services = loadServices();
 
@@ -178,6 +204,10 @@ const deployService = asyncHandler(async (req, res) => {
 
   const target = resolveTarget(service.target);
 
+  // Checked before anything is mutated, so a rejected deploy leaves the
+  // service exactly as it was rather than stranded at "building".
+  assertPortAllowedForTarget(service.port, target);
+
   service.status = "building";
   service.lastDeploymentStartedAt = new Date().toISOString();
   service.lastDeploymentFinishedAt = null;
@@ -208,6 +238,8 @@ const redeployService = asyncHandler(async (req, res) => {
   }
 
   const target = resolveTarget(service.target);
+
+  assertPortAllowedForTarget(service.port, target);
 
   service.status = "building";
   service.lastDeploymentStartedAt = new Date().toISOString();
