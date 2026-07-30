@@ -6,9 +6,9 @@
     "port": 3000,
     "status": "created",
     "createdAt": "2026-05-22T01:21:45.612Z",
-    "lastDeploymentStartedAt": "2026-07-30T18:55:01.072Z",
-    "lastDeploymentFinishedAt": "2026-07-30T18:55:10.760Z",
-    "lastUndeployedAt": "2026-07-30T18:55:31.724Z",
+    "lastDeploymentStartedAt": "2026-07-30T19:06:50.618Z",
+    "lastDeploymentFinishedAt": "2026-07-30T19:06:59.328Z",
+    "lastUndeployedAt": "2026-07-30T19:07:11.088Z",
     "deploymentError": null,
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1779412905612",
     "dockerImageName": "cloudbuilder-1779412905612",
@@ -70,6 +70,22 @@
         "startedAt": "2026-07-30T18:55:31.469Z",
         "finishedAt": "2026-07-30T18:55:31.724Z",
         "error": null
+      },
+      {
+        "id": "1785438410618-5606xn",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-30T19:06:50.618Z",
+        "finishedAt": "2026-07-30T19:06:59.328Z",
+        "error": null
+      },
+      {
+        "id": "1785438430821-ripmz3",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-30T19:07:10.821Z",
+        "finishedAt": "2026-07-30T19:07:11.088Z",
+        "error": null
       }
     ],
     "deployedTarget": "local",
@@ -82,10 +98,10 @@
     "port": 4001,
     "status": "failed",
     "createdAt": "2026-07-24T18:15:40.968Z",
-    "lastDeploymentStartedAt": "2026-07-30T17:34:08.949Z",
-    "lastDeploymentFinishedAt": "2026-07-30T17:35:12.380Z",
+    "lastDeploymentStartedAt": "2026-07-30T19:05:45.861Z",
+    "lastDeploymentFinishedAt": "2026-07-30T19:05:47.786Z",
     "lastUndeployedAt": null,
-    "deploymentError": "Cloning into '/home/qardan/cloudbuilder/backend/deployments/1784916940968'...\n",
+    "deploymentError": "fatal: repository 'https://github.com/ahmad-abdulmajid/empty-history-test/' not found",
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1784916940968",
     "dockerImageName": "cloudbuilder-1784916940968",
     "dockerContainerName": "cloudbuilder-container-1784916940968",
@@ -122,8 +138,17 @@
         "startedAt": "2026-07-30T17:34:08.952Z",
         "finishedAt": "2026-07-30T17:35:12.380Z",
         "error": "Cloning into '/home/qardan/cloudbuilder/backend/deployments/1784916940968'...\n"
+      },
+      {
+        "id": "1785438345861-z82aw5",
+        "type": "deploy",
+        "status": "failed",
+        "startedAt": "2026-07-30T19:05:45.861Z",
+        "finishedAt": "2026-07-30T19:05:47.786Z",
+        "error": "fatal: repository 'https://github.com/ahmad-abdulmajid/empty-history-test/' not found"
       }
-    ]
+    ],
+    "deployedTarget": "local"
   },
   {
     "id": "1785352743542",
