@@ -40,10 +40,10 @@
     "port": 4001,
     "status": "failed",
     "createdAt": "2026-07-24T18:15:40.968Z",
-    "lastDeploymentStartedAt": "2026-07-24T18:31:47.625Z",
-    "lastDeploymentFinishedAt": "2026-07-25T19:17:30.077Z",
+    "lastDeploymentStartedAt": "2026-07-30T17:34:08.949Z",
+    "lastDeploymentFinishedAt": "2026-07-30T17:35:12.380Z",
     "lastUndeployedAt": null,
-    "deploymentError": "Deployment interrupted by server restart",
+    "deploymentError": "Cloning into '/home/qardan/cloudbuilder/backend/deployments/1784916940968'...\n",
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1784916940968",
     "dockerImageName": "cloudbuilder-1784916940968",
     "dockerContainerName": "cloudbuilder-container-1784916940968",
@@ -72,6 +72,14 @@
         "startedAt": "2026-07-24T18:31:47.626Z",
         "finishedAt": "2026-07-25T19:17:30.077Z",
         "error": "Deployment interrupted by server restart"
+      },
+      {
+        "id": "1785432848952-ac01dj",
+        "type": "deploy",
+        "status": "failed",
+        "startedAt": "2026-07-30T17:34:08.952Z",
+        "finishedAt": "2026-07-30T17:35:12.380Z",
+        "error": "Cloning into '/home/qardan/cloudbuilder/backend/deployments/1784916940968'...\n"
       }
     ]
   },

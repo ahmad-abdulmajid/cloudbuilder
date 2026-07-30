@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
 import DeploymentStatus from '../components/DeploymentStatus.jsx';
+import TargetBadge from '../components/TargetBadge.jsx';
 import theme from '../styles/theme';
 
 function ServiceDetailsPage() {
@@ -88,6 +89,28 @@ function ServiceDetailsPage() {
     return theme.colors.mutedText; // in-progress or unknown
   };
 
+  // arn:aws:ecs:<region>:<account>:task-definition/<family>:<revision>
+  const parseTaskDefinition = (arn) => {
+    if (!arn) {
+      return null;
+    }
+
+    const lastSegment = arn.split('/').pop();
+    const separator = lastSegment.lastIndexOf(':');
+
+    if (separator === -1) {
+      return { family: lastSegment, revision: null };
+    }
+
+    return {
+      family: lastSegment.slice(0, separator),
+      revision: lastSegment.slice(separator + 1)
+    };
+  };
+
+  // arn:aws:ecs:<region>:<account>:task/<cluster>/<taskId>
+  const shortTaskId = (arn) => (arn ? arn.split('/').pop() : null);
+
   if (error && !service) {
     return (
       <>
@@ -111,6 +134,16 @@ function ServiceDetailsPage() {
     );
   }
 
+  // The backend treats anything that is not explicitly "aws" as local,
+  // because services created before the field existed have no target.
+  // The frontend must apply the same rule or those services would render
+  // an empty AWS panel.
+  const target = service.target === 'aws' ? 'aws' : 'local';
+  const isAws = target === 'aws';
+
+  const taskDefinition = parseTaskDefinition(service.taskDefinitionArn);
+  const taskId = shortTaskId(service.taskArn);
+
   const history = [...(service.deploymentHistory || [])].sort(
     (a, b) => new Date(b.startedAt) - new Date(a.startedAt)
   );
@@ -121,7 +154,10 @@ function ServiceDetailsPage() {
       <Navbar />
       <div style={styles.container}>
         <div style={styles.card}>
-          <h1 style={styles.title}>{service.name}</h1>
+          <div style={styles.titleRow}>
+            <h1 style={styles.title}>{service.name}</h1>
+            <TargetBadge target={target} />
+          </div>
           <p style={styles.subtitle}>Detailed deployment information for this service.</p>
 
           {error && <p style={styles.errorBox}>{error}</p>}
@@ -147,6 +183,11 @@ function ServiceDetailsPage() {
               <strong>Status:</strong> <DeploymentStatus status={service.status} />
             </p>
 
+            <p style={styles.row}>
+              <strong>Deployment Target:</strong>{' '}
+              {isAws ? 'AWS Fargate (eu-central-1)' : 'Local Docker'}
+            </p>
+
             <p style={styles.row}><strong>Created At:</strong> {formatDate(service.createdAt)}</p>
           </section>
 
@@ -169,15 +210,58 @@ function ServiceDetailsPage() {
               )}
             </p>
 
-            <p style={styles.row}>
-              <strong>Docker Image:</strong>{' '}
-              {service.dockerImageName || 'Not available'}
-            </p>
+            {isAws ? (
+              <>
+                <p style={styles.row}>
+                  <strong>Public IP:</strong>{' '}
+                  {service.publicIp || 'Not available'}
+                </p>
 
-            <p style={styles.row}>
-              <strong>Docker Container:</strong>{' '}
-              {service.dockerContainerName || 'Not available'}
-            </p>
+                <p style={styles.row}>
+                  <strong>ECR Image:</strong>{' '}
+                  {service.ecrImageUri ? (
+                    <span style={styles.mono}>{service.ecrImageUri}</span>
+                  ) : (
+                    'Not available'
+                  )}
+                </p>
+
+                <p style={styles.row}>
+                  <strong>Task Definition:</strong>{' '}
+                  {taskDefinition ? (
+                    <span style={styles.mono}>
+                      {taskDefinition.family}
+                      {taskDefinition.revision && ` (revision ${taskDefinition.revision})`}
+                    </span>
+                  ) : (
+                    'Not available'
+                  )}
+                </p>
+
+                <p style={styles.row}>
+                  <strong>Task:</strong>{' '}
+                  {taskId ? (
+                    <span style={styles.mono} title={service.taskArn}>
+                      {taskId}
+                    </span>
+                  ) : (
+                    'No running task'
+                  )}
+                </p>
+              </>
+            ) : (
+              <>
+                <p style={styles.row}>
+                  <strong>Docker Image:</strong>{' '}
+                  {service.dockerImageName || 'Not available'}
+                </p>
+
+                <p style={styles.row}>
+                  <strong>Docker Container:</strong>{' '}
+                  {service.dockerContainerName || 'Not available'}
+                </p>
+              </>
+            )}
 
             <p style={styles.row}>
               <strong>Deployment Started:</strong>{' '}
@@ -283,9 +367,17 @@ const styles = {
     color: theme.colors.text,
     boxShadow: theme.shadow.card
   },
+  titleRow: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '0.75rem',
+    flexWrap: 'wrap',
+    marginBottom: '0.4rem'
+  },
   title: {
     color: theme.colors.text,
-    marginBottom: '0.4rem',
+    margin: 0,
     textAlign: 'center'
   },
   subtitle: {
@@ -308,6 +400,11 @@ const styles = {
   row: {
     lineHeight: 1.7,
     color: theme.colors.text
+  },
+  mono: {
+    fontFamily: 'monospace',
+    fontSize: '0.9rem',
+    wordBreak: 'break-all'
   },
   table: {
     width: '100%',
