@@ -2,16 +2,16 @@
   {
     "id": "1779412905612",
     "name": "Test Histroy",
-    "repoUrl": "https://github.com/cloudacademy/static-website-example",
-    "port": 4000,
-    "status": "failed",
+    "repoUrl": "https://github.com/ahmad-abdulmajid/cloudbuilder-demo-app",
+    "port": 3000,
+    "status": "created",
     "createdAt": "2026-05-22T01:21:45.612Z",
-    "lastDeploymentStartedAt": "2026-07-24T17:16:57.114Z",
-    "lastDeploymentFinishedAt": "2026-07-24T17:16:59.211Z",
-    "lastUndeployedAt": null,
-    "deploymentError": "Dockerfile not found in repository",
+    "lastDeploymentStartedAt": "2026-07-30T17:58:52.458Z",
+    "lastDeploymentFinishedAt": "2026-07-30T17:59:03.486Z",
+    "lastUndeployedAt": "2026-07-30T18:01:36.410Z",
+    "deploymentError": null,
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1779412905612",
-    "dockerImageName": null,
+    "dockerImageName": "cloudbuilder-1779412905612",
     "dockerContainerName": null,
     "serviceUrl": null,
     "deploymentHistory": [
@@ -30,8 +30,34 @@
         "startedAt": "2026-07-24T17:16:57.116Z",
         "finishedAt": "2026-07-24T17:16:59.211Z",
         "error": "Dockerfile not found in repository"
+      },
+      {
+        "id": "1785433995553-0chkkl",
+        "type": "deploy",
+        "status": "failed",
+        "startedAt": "2026-07-30T17:53:15.553Z",
+        "finishedAt": "2026-07-30T17:53:19.496Z",
+        "error": "Dockerfile not found in repository"
+      },
+      {
+        "id": "1785434332458-7tvutw",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-30T17:58:52.458Z",
+        "finishedAt": "2026-07-30T17:59:03.486Z",
+        "error": null
+      },
+      {
+        "id": "1785434496137-q54eu4",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-30T18:01:36.137Z",
+        "finishedAt": "2026-07-30T18:01:36.410Z",
+        "error": null
       }
-    ]
+    ],
+    "deployedTarget": "local",
+    "target": "local"
   },
   {
     "id": "1784916940968",

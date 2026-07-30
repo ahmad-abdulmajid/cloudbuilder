@@ -13,16 +13,38 @@ const asyncHandler = require("../utils/asyncHandler");
 const ALLOWED_TARGETS = ["local", "aws"];
 
 /**
- * Picks the deployment implementation for a service.
+ * Normalizes a deployment target.
  * Services created before the target field existed have no target,
- * so anything that is not explicitly "aws" falls back to local.
+ * so anything that is not explicitly "aws" is treated as local.
  */
-function getDeploymentHandlers(service) {
-  if (service.target === "aws") {
+function resolveTarget(target) {
+  return target === "aws" ? "aws" : "local";
+}
+
+/**
+ * Picks the deployment implementation for a given target.
+ *
+ * This takes a target rather than a service on purpose. Deploying and
+ * stopping ask different questions: a deploy uses the target the user
+ * currently wants, while a stop must use the target the workload was
+ * actually started with. Passing the target explicitly forces each call
+ * site to say which one it means.
+ */
+function getHandlersForTarget(target) {
+  if (resolveTarget(target) === "aws") {
     return { start: startAwsDeployment, stop: stopAwsDeployment };
   }
 
   return { start: startLocalDeployment, stop: stopLocalDeployment };
+}
+
+/**
+ * The target a running workload was started with.
+ * Falls back to the current target for services deployed before
+ * deployedTarget was recorded.
+ */
+function getDeployedTarget(service) {
+  return service.deployedTarget || service.target;
 }
 
 const createService = asyncHandler(async (req, res) => {
@@ -75,6 +97,9 @@ const createService = asyncHandler(async (req, res) => {
     repoUrl: trimmedRepoUrl,
     port: numericPort,
     target: selectedTarget,
+    // Set when a deployment is dispatched, so cleanup can stop what was
+    // actually started even if target changes afterwards.
+    deployedTarget: null,
     status: "created",
     createdAt: new Date().toISOString(),
     lastDeploymentStartedAt: null,
@@ -151,14 +176,20 @@ const deployService = asyncHandler(async (req, res) => {
     throw new AppError("Service not found", 404);
   }
 
+  const target = resolveTarget(service.target);
+
   service.status = "building";
   service.lastDeploymentStartedAt = new Date().toISOString();
   service.lastDeploymentFinishedAt = null;
   service.deploymentError = null;
+  // Recorded before the handler runs, not after it succeeds. A deployment
+  // that fails partway can still leave a container or task behind, and the
+  // cleanup path needs to know which handler owns it.
+  service.deployedTarget = target;
 
   saveServices(services);
 
-  const { start } = getDeploymentHandlers(service);
+  const { start } = getHandlersForTarget(target);
 
   start({ ...service });
 
@@ -176,14 +207,17 @@ const redeployService = asyncHandler(async (req, res) => {
     throw new AppError("Service not found", 404);
   }
 
+  const target = resolveTarget(service.target);
+
   service.status = "building";
   service.lastDeploymentStartedAt = new Date().toISOString();
   service.lastDeploymentFinishedAt = null;
   service.deploymentError = null;
+  service.deployedTarget = target;
 
   saveServices(services);
 
-  const { start } = getDeploymentHandlers(service);
+  const { start } = getHandlersForTarget(target);
 
   start({ ...service });
 
@@ -205,7 +239,8 @@ const stopService = asyncHandler(async (req, res) => {
     throw new AppError("Only deployed services can be undeployed", 400);
   }
 
-  const { stop } = getDeploymentHandlers(service);
+  // Stop what was started, not what the service currently points at.
+  const { stop } = getHandlersForTarget(getDeployedTarget(service));
 
   const updatedService = await stop(service);
 
@@ -224,7 +259,7 @@ const deleteService = asyncHandler(async (req, res) => {
   }
 
   const serviceToDelete = services[serviceIndex];
-  const { stop } = getDeploymentHandlers(serviceToDelete);
+  const { stop } = getHandlersForTarget(getDeployedTarget(serviceToDelete));
 
   const hasRunningWorkload =
     serviceToDelete.dockerContainerName ||
