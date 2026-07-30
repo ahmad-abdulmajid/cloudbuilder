@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { execFile } = require("child_process");
+const { runCommand } = require("../utils/runCommand");
 const {
   loadServices,
   saveServices,
@@ -13,27 +13,6 @@ const {
 // deployments will be stored in backend/deployments, outside src.
 // This prevents nodemon from restarting during deployment.
 const deploymentsRoot = path.join(__dirname, "..", "..", "deployments");
-
-function runCommand(command, args, options = {}) {
-  return new Promise((resolve, reject) => {
-    execFile(
-      command,
-      args,
-      {
-        timeout: options.timeout || 60000,
-        cwd: options.cwd || undefined,
-      },
-      (error, stdout, stderr) => {
-        if (error) {
-          reject(stderr || error.message);
-          return;
-        }
-
-        resolve(stdout);
-      }
-    );
-  });
-}
 
 function updateService(serviceId, updates) {
   const services = loadServices();

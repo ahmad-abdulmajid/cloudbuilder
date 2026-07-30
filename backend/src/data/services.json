@@ -6,9 +6,9 @@
     "port": 3000,
     "status": "created",
     "createdAt": "2026-05-22T01:21:45.612Z",
-    "lastDeploymentStartedAt": "2026-07-30T17:58:52.458Z",
-    "lastDeploymentFinishedAt": "2026-07-30T17:59:03.486Z",
-    "lastUndeployedAt": "2026-07-30T18:01:36.410Z",
+    "lastDeploymentStartedAt": "2026-07-30T18:55:01.072Z",
+    "lastDeploymentFinishedAt": "2026-07-30T18:55:10.760Z",
+    "lastUndeployedAt": "2026-07-30T18:55:31.724Z",
     "deploymentError": null,
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1779412905612",
     "dockerImageName": "cloudbuilder-1779412905612",
@@ -53,6 +53,22 @@
         "status": "success",
         "startedAt": "2026-07-30T18:01:36.137Z",
         "finishedAt": "2026-07-30T18:01:36.410Z",
+        "error": null
+      },
+      {
+        "id": "1785437701073-gv7yfw",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-30T18:55:01.073Z",
+        "finishedAt": "2026-07-30T18:55:10.760Z",
+        "error": null
+      },
+      {
+        "id": "1785437731469-vgzzez",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-30T18:55:31.469Z",
+        "finishedAt": "2026-07-30T18:55:31.724Z",
         "error": null
       }
     ],
