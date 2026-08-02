@@ -9,6 +9,7 @@ const {
 } = require("../services/awsDeploymentFlow");
 const AppError = require("../utils/AppError");
 const asyncHandler = require("../utils/asyncHandler");
+const { ALL_STATUSES } = require("../constants/statuses");
 
 const ALLOWED_TARGETS = ["local", "aws"];
 
@@ -168,7 +169,7 @@ const getServiceById = asyncHandler(async (req, res) => {
 
 const updateServiceStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
-  const allowedStatuses = ["created", "building", "pushed", "deployed", "failed"];
+  const allowedStatuses = ALL_STATUSES;
 
   if (!status) {
     throw new AppError("Status is required", 400);

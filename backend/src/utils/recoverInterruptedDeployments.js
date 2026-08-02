@@ -1,13 +1,10 @@
 const { loadServices, saveServices } = require("./serviceStorage");
+const { TRANSITIONAL_STATUSES } = require("../constants/statuses");
 
 const INTERRUPTED_MESSAGE = "Deployment interrupted by server restart";
 
-// Statuses that mean "a deployment is in progress right now". If the server
-// is starting up, no deployment can actually be in progress, so any service
-// found in one of these states was interrupted and must be marked failed.
-// Keep in sync with TRANSITIONAL_STATUSES in frontend DeploymentStatus.jsx.
-const TRANSITIONAL_STATUSES = ["building", "pushed"];
-
+// If the server is starting up, no deployment can actually be in progress,
+// so any service found in a transitional state was interrupted.
 const recoverInterruptedDeployments = () => {
   const services = loadServices();
   const finishedAt = new Date().toISOString();
