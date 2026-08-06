@@ -1,14 +1,14 @@
 [
   {
     "id": "1779412905612",
-    "name": "Test Histroy",
+    "name": "Renamed Demo App",
     "repoUrl": "https://github.com/ahmad-abdulmajid/cloudbuilder-demo-app",
     "port": 3000,
     "status": "created",
     "createdAt": "2026-05-22T01:21:45.612Z",
-    "lastDeploymentStartedAt": "2026-07-30T19:06:50.618Z",
-    "lastDeploymentFinishedAt": "2026-07-30T19:06:59.328Z",
-    "lastUndeployedAt": "2026-07-30T19:07:11.088Z",
+    "lastDeploymentStartedAt": "2026-07-31T17:24:56.829Z",
+    "lastDeploymentFinishedAt": "2026-08-02T10:48:27.418Z",
+    "lastUndeployedAt": "2026-08-02T10:55:13.940Z",
     "deploymentError": null,
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1779412905612",
     "dockerImageName": "cloudbuilder-1779412905612",
@@ -86,6 +86,38 @@
         "startedAt": "2026-07-30T19:07:10.821Z",
         "finishedAt": "2026-07-30T19:07:11.088Z",
         "error": null
+      },
+      {
+        "id": "1785518577753-b9wzci",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-31T17:22:57.753Z",
+        "finishedAt": "2026-07-31T17:23:03.910Z",
+        "error": null
+      },
+      {
+        "id": "1785518696829-hl14x9",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-31T17:24:56.829Z",
+        "finishedAt": "2026-07-31T17:25:03.888Z",
+        "error": null
+      },
+      {
+        "id": "1785518753040-jebnvz",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-31T17:25:53.040Z",
+        "finishedAt": "2026-07-31T17:25:53.313Z",
+        "error": null
+      },
+      {
+        "id": "1785668113811-nzzfp3",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-08-02T10:55:13.811Z",
+        "finishedAt": "2026-08-02T10:55:13.940Z",
+        "error": null
       }
     ],
     "deployedTarget": "local",
@@ -158,16 +190,16 @@
     "target": "aws",
     "status": "created",
     "createdAt": "2026-07-29T19:19:03.542Z",
-    "lastDeploymentStartedAt": "2026-07-29T19:19:06.796Z",
-    "lastDeploymentFinishedAt": "2026-07-29T19:19:39.247Z",
-    "lastUndeployedAt": "2026-07-29T19:19:52.339Z",
+    "lastDeploymentStartedAt": "2026-07-31T17:33:25.350Z",
+    "lastDeploymentFinishedAt": "2026-07-31T17:33:53.368Z",
+    "lastUndeployedAt": "2026-07-31T17:35:31.305Z",
     "deploymentError": null,
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1785352743542",
     "dockerImageName": "cloudbuilder-1785352743542",
     "dockerContainerName": null,
     "serviceUrl": null,
     "ecrImageUri": "349326897252.dkr.ecr.eu-central-1.amazonaws.com/cloudbuilder-services:service-1785352743542",
-    "taskDefinitionArn": "arn:aws:ecs:eu-central-1:349326897252:task-definition/cloudbuilder-service-1785352743542:1",
+    "taskDefinitionArn": "arn:aws:ecs:eu-central-1:349326897252:task-definition/cloudbuilder-service-1785352743542:3",
     "taskArn": null,
     "publicIp": null,
     "deploymentHistory": [
@@ -186,7 +218,40 @@
         "startedAt": "2026-07-29T19:19:51.767Z",
         "finishedAt": "2026-07-29T19:19:52.339Z",
         "error": null
+      },
+      {
+        "id": "1785518935182-ptbfv2",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-31T17:28:55.182Z",
+        "finishedAt": "2026-07-31T17:29:38.043Z",
+        "error": null
+      },
+      {
+        "id": "1785519178665-ct1nlp",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-31T17:32:58.665Z",
+        "finishedAt": "2026-07-31T17:32:59.948Z",
+        "error": null
+      },
+      {
+        "id": "1785519205350-arhiq3",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-07-31T17:33:25.350Z",
+        "finishedAt": "2026-07-31T17:33:53.368Z",
+        "error": null
+      },
+      {
+        "id": "1785519330580-3805yu",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-07-31T17:35:30.580Z",
+        "finishedAt": "2026-07-31T17:35:31.305Z",
+        "error": null
       }
-    ]
+    ],
+    "deployedTarget": "aws"
   }
 ]

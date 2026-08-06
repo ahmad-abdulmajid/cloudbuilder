@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
-import DeploymentStatus from '../components/DeploymentStatus.jsx';
+import DeploymentStatus, { TRANSITIONAL_STATUSES } from '../components/DeploymentStatus.jsx';
 import TargetBadge from '../components/TargetBadge.jsx';
 import theme from '../styles/theme';
 
@@ -26,9 +26,11 @@ function ServiceDetailsPage() {
     fetchService();
   }, [fetchService]);
 
-  // Poll while a deployment is in progress
+  // Poll while a deployment is in progress.
+  // "In progress" means any transitional status, not just "building" —
+  // the backend also passes through "pushed" before reaching "deployed".
   useEffect(() => {
-    if (service?.status !== 'building') {
+    if (!TRANSITIONAL_STATUSES.includes(service?.status)) {
       return;
     }
 
@@ -133,6 +135,11 @@ function ServiceDetailsPage() {
       </>
     );
   }
+
+  // A deployment is running right now, regardless of who started it.
+  const isDeploying = TRANSITIONAL_STATUSES.includes(service?.status);
+  // This browser tab also has a request in flight, so the button must not fire twice.
+  const redeployDisabled = actionLoading || isDeploying;
 
   // The backend treats anything that is not explicitly "aws" as local,
   // because services created before the field existed have no target.
@@ -335,13 +342,13 @@ function ServiceDetailsPage() {
 
             <button
               onClick={handleRedeploy}
-              disabled={actionLoading || service.status === 'building'}
+              disabled={redeployDisabled}
               style={{
                 ...styles.button,
-                ...(actionLoading || service.status === 'building' ? styles.buttonDisabled : {})
+                ...(redeployDisabled ? styles.buttonDisabled : {})
               }}
             >
-              {actionLoading || service.status === 'building' ? 'Redeploying...' : 'Redeploy'}
+              {redeployDisabled ? 'Redeploying...' : 'Redeploy'}
             </button>
           </div>
         </div>

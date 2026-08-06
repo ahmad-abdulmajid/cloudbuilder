@@ -4,6 +4,7 @@ const {
   getAllServices,
   getServiceById,
   updateServiceStatus,
+  renameService,
   deployService,
   redeployService,
   stopService,
@@ -19,6 +20,7 @@ router.post("/:id/redeploy", redeployService);
 router.post("/:id/stop", stopService);
 router.get("/:id", getServiceById);
 router.patch("/:id/status", updateServiceStatus);
+router.patch("/:id/rename", renameService);
 router.delete("/:id", deleteService);
 
 module.exports = router;

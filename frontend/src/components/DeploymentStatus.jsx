@@ -137,5 +137,5 @@ const styles = {
     fontSize: '0.85rem'
   }
 };
-
+export const TRANSITIONAL_STATUSES = ['building', 'pushed'];
 export default DeploymentStatus;

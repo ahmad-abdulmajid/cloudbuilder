@@ -19,6 +19,10 @@ const ALLOWED_TARGETS = ["local", "aws"];
 const AWS_MIN_PORT = 3000;
 const AWS_MAX_PORT = 9000;
 
+// Longest accepted display name. Keeps services.json and the dashboard
+// layout predictable; the id, not the name, is what anything else keys off.
+const MAX_NAME_LENGTH = 100;
+
 /**
  * Normalizes a deployment target.
  * Services created before the target field existed have no target,
@@ -44,6 +48,22 @@ function assertPortAllowedForTarget(port, target) {
       400
     );
   }
+}
+
+/**
+ * Finds a service whose name collides with the candidate, ignoring case.
+ *
+ * excludeId exists for rename: the service being renamed is already in the
+ * list, so without it every rename would collide with itself, including a
+ * rename that only changes capitalization.
+ */
+function findNameCollision(services, candidateName, excludeId = null) {
+  const normalized = candidateName.toLowerCase();
+
+  return services.find(
+    (service) =>
+      service.id !== excludeId && service.name.toLowerCase() === normalized
+  );
 }
 
 /**
@@ -84,6 +104,13 @@ const createService = asyncHandler(async (req, res) => {
     throw new AppError("Name, repo URL, and port are required", 400);
   }
 
+  if (trimmedName.length > MAX_NAME_LENGTH) {
+    throw new AppError(
+      `Name must be ${MAX_NAME_LENGTH} characters or fewer`,
+      400
+    );
+  }
+
   const githubUrlPattern = /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/?$/;
 
   if (!githubUrlPattern.test(trimmedRepoUrl)) {
@@ -102,9 +129,7 @@ const createService = asyncHandler(async (req, res) => {
 
   const services = loadServices();
 
-  const duplicateName = services.find(
-    (service) => service.name.toLowerCase() === trimmedName.toLowerCase()
-  );
+  const duplicateName = findNameCollision(services, trimmedName);
 
   if (duplicateName) {
     throw new AppError("A service with this name already exists", 409);
@@ -191,6 +216,54 @@ const updateServiceStatus = asyncHandler(async (req, res) => {
 
   return res.status(200).json({
     message: "Status updated successfully",
+    service,
+  });
+});
+
+/**
+ * Renames a service.
+ *
+ * Deliberately narrow: the name is a display label only, so this touches
+ * no deployment state and is safe to call while a service is building or
+ * deployed. Nothing else keys off the name — the ECR image URI, task
+ * definition and container name are all derived from the id.
+ */
+const renameService = asyncHandler(async (req, res) => {
+  const { name } = req.body;
+
+  const trimmedName = name?.trim();
+
+  if (!trimmedName) {
+    throw new AppError("Name is required", 400);
+  }
+
+  if (trimmedName.length > MAX_NAME_LENGTH) {
+    throw new AppError(
+      `Name must be ${MAX_NAME_LENGTH} characters or fewer`,
+      400
+    );
+  }
+
+  const services = loadServices();
+  const service = services.find((s) => s.id === req.params.id);
+
+  if (!service) {
+    throw new AppError("Service not found", 404);
+  }
+
+  // Same rule createService enforces, so a name rejected at creation cannot
+  // be introduced through the back door.
+  const duplicateName = findNameCollision(services, trimmedName, service.id);
+
+  if (duplicateName) {
+    throw new AppError("A service with this name already exists", 409);
+  }
+
+  service.name = trimmedName;
+  saveServices(services);
+
+  return res.status(200).json({
+    message: "Service renamed successfully",
     service,
   });
 });
@@ -304,7 +377,9 @@ const deleteService = asyncHandler(async (req, res) => {
   }
 
   const latestServices = loadServices();
-  const latestServiceIndex = latestServices.findIndex((s) => s.id === req.params.id);
+  const latestServiceIndex = latestServices.findIndex(
+    (s) => s.id === req.params.id
+  );
 
   if (latestServiceIndex === -1) {
     throw new AppError("Service not found after cleanup", 404);
@@ -325,6 +400,7 @@ module.exports = {
   getAllServices,
   getServiceById,
   updateServiceStatus,
+  renameService,
   deployService,
   redeployService,
   stopService,
