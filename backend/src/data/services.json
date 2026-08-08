@@ -1,15 +1,15 @@
 [
   {
     "id": "1779412905612",
-    "name": "Renamed Demo App",
+    "name": "demo-app-local",
     "repoUrl": "https://github.com/ahmad-abdulmajid/cloudbuilder-demo-app",
     "port": 3000,
-    "status": "created",
+    "status": "failed",
     "createdAt": "2026-05-22T01:21:45.612Z",
-    "lastDeploymentStartedAt": "2026-07-31T17:24:56.829Z",
-    "lastDeploymentFinishedAt": "2026-08-02T10:48:27.418Z",
-    "lastUndeployedAt": "2026-08-02T10:55:13.940Z",
-    "deploymentError": null,
+    "lastDeploymentStartedAt": "2026-08-06T18:16:44.551Z",
+    "lastDeploymentFinishedAt": "2026-08-08T16:29:15.912Z",
+    "lastUndeployedAt": "2026-08-06T18:19:22.465Z",
+    "deploymentError": "Deployment interrupted by server restart",
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1779412905612",
     "dockerImageName": "cloudbuilder-1779412905612",
     "dockerContainerName": null,
@@ -118,6 +118,38 @@
         "startedAt": "2026-08-02T10:55:13.811Z",
         "finishedAt": "2026-08-02T10:55:13.940Z",
         "error": null
+      },
+      {
+        "id": "1786039623984-b07m0v",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-08-06T18:07:03.984Z",
+        "finishedAt": "2026-08-06T18:07:08.896Z",
+        "error": null
+      },
+      {
+        "id": "1786039631984-x53bvs",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-08-06T18:07:11.984Z",
+        "finishedAt": "2026-08-06T18:07:12.275Z",
+        "error": null
+      },
+      {
+        "id": "1786040204551-o6cnxq",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-08-06T18:16:44.551Z",
+        "finishedAt": "2026-08-06T18:16:48.798Z",
+        "error": null
+      },
+      {
+        "id": "1786040362191-wspgm3",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-08-06T18:19:22.191Z",
+        "finishedAt": "2026-08-06T18:19:22.465Z",
+        "error": null
       }
     ],
     "deployedTarget": "local",
@@ -125,13 +157,13 @@
   },
   {
     "id": "1784916940968",
-    "name": "empty-history-test",
+    "name": "invalid-repo-test",
     "repoUrl": "https://github.com/ahmad-abdulmajid/empty-history-test",
     "port": 4001,
     "status": "failed",
     "createdAt": "2026-07-24T18:15:40.968Z",
-    "lastDeploymentStartedAt": "2026-07-30T19:05:45.861Z",
-    "lastDeploymentFinishedAt": "2026-07-30T19:05:47.786Z",
+    "lastDeploymentStartedAt": "2026-08-06T18:06:55.761Z",
+    "lastDeploymentFinishedAt": "2026-08-06T18:06:56.801Z",
     "lastUndeployedAt": null,
     "deploymentError": "fatal: repository 'https://github.com/ahmad-abdulmajid/empty-history-test/' not found",
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1784916940968",
@@ -178,28 +210,36 @@
         "startedAt": "2026-07-30T19:05:45.861Z",
         "finishedAt": "2026-07-30T19:05:47.786Z",
         "error": "fatal: repository 'https://github.com/ahmad-abdulmajid/empty-history-test/' not found"
+      },
+      {
+        "id": "1786039615761-4uww1l",
+        "type": "deploy",
+        "status": "failed",
+        "startedAt": "2026-08-06T18:06:55.761Z",
+        "finishedAt": "2026-08-06T18:06:56.801Z",
+        "error": "fatal: repository 'https://github.com/ahmad-abdulmajid/empty-history-test/' not found"
       }
     ],
     "deployedTarget": "local"
   },
   {
     "id": "1785352743542",
-    "name": "AWS TEST",
+    "name": "demo-app-aws",
     "repoUrl": "https://github.com/ahmad-abdulmajid/cloudbuilder-demo-app",
     "port": 3000,
     "target": "aws",
     "status": "created",
     "createdAt": "2026-07-29T19:19:03.542Z",
-    "lastDeploymentStartedAt": "2026-07-31T17:33:25.350Z",
-    "lastDeploymentFinishedAt": "2026-07-31T17:33:53.368Z",
-    "lastUndeployedAt": "2026-07-31T17:35:31.305Z",
+    "lastDeploymentStartedAt": "2026-08-06T18:27:46.392Z",
+    "lastDeploymentFinishedAt": "2026-08-06T18:28:15.838Z",
+    "lastUndeployedAt": "2026-08-06T18:32:34.756Z",
     "deploymentError": null,
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1785352743542",
     "dockerImageName": "cloudbuilder-1785352743542",
     "dockerContainerName": null,
     "serviceUrl": null,
     "ecrImageUri": "349326897252.dkr.ecr.eu-central-1.amazonaws.com/cloudbuilder-services:service-1785352743542",
-    "taskDefinitionArn": "arn:aws:ecs:eu-central-1:349326897252:task-definition/cloudbuilder-service-1785352743542:3",
+    "taskDefinitionArn": "arn:aws:ecs:eu-central-1:349326897252:task-definition/cloudbuilder-service-1785352743542:4",
     "taskArn": null,
     "publicIp": null,
     "deploymentHistory": [
@@ -249,6 +289,22 @@
         "status": "success",
         "startedAt": "2026-07-31T17:35:30.580Z",
         "finishedAt": "2026-07-31T17:35:31.305Z",
+        "error": null
+      },
+      {
+        "id": "1786040866393-dcdyth",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-08-06T18:27:46.393Z",
+        "finishedAt": "2026-08-06T18:28:15.838Z",
+        "error": null
+      },
+      {
+        "id": "1786041153957-oke7yq",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-08-06T18:32:33.957Z",
+        "finishedAt": "2026-08-06T18:32:34.756Z",
         "error": null
       }
     ],

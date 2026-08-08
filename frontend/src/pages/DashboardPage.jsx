@@ -12,6 +12,15 @@ function DashboardPage() {
   const [deployingId, setDeployingId] = useState(null);
   const [stoppingId, setStoppingId] = useState(null);
 
+  // Rename state. Only one service can be edited at a time, so a single
+  // id plus a single draft string is enough — no per-card state needed.
+  const [editingId, setEditingId] = useState(null);
+  const [draftName, setDraftName] = useState('');
+  const [renamingId, setRenamingId] = useState(null);
+  // Kept separate from the page-level error: a rejected name belongs next
+  // to the input that produced it, not in the banner at the top of the page.
+  const [renameError, setRenameError] = useState('');
+
   const fetchServices = async (showLoading = true) => {
     try {
       if (showLoading) {
@@ -62,6 +71,70 @@ function DashboardPage() {
         setError(err.message);
       }
     }, 3000);
+  };
+
+  const startEditing = (service) => {
+    setEditingId(service.id);
+    setDraftName(service.name);
+    setRenameError('');
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setDraftName('');
+    setRenameError('');
+  };
+
+  const handleRename = async (service) => {
+    const trimmedName = draftName.trim();
+
+    if (!trimmedName) {
+      setRenameError('Name cannot be empty');
+      return;
+    }
+
+    // Nothing changed, so there is no reason to spend a request on it.
+    if (trimmedName === service.name) {
+      cancelEditing();
+      return;
+    }
+
+    try {
+      setRenamingId(service.id);
+      setRenameError('');
+
+      const response = await api.patch(`/services/${service.id}/rename`, {
+        name: trimmedName
+      });
+
+      // Same pattern as deploy and undeploy: replace the one service the
+      // server sent back rather than refetching the whole list.
+      setServices((prevServices) =>
+        prevServices.map((s) =>
+          s.id === service.id ? response.data.service : s
+        )
+      );
+
+      cancelEditing();
+    } catch (err) {
+      // Leaves the input open with the rejected text still in it, so the
+      // user can correct it instead of retyping from scratch.
+      setRenameError(err.message);
+    } finally {
+      setRenamingId(null);
+    }
+  };
+
+  const handleRenameKeyDown = (event, service) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleRename(service);
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      cancelEditing();
+    }
   };
 
   const handleDeploy = async (id) => {
@@ -149,7 +222,61 @@ function DashboardPage() {
             {[...services].reverse().map((service) => (
               <div key={service.id} style={styles.card}>
                 <div style={styles.cardHeader}>
-                  <h3 style={styles.serviceName}>{service.name}</h3>
+                  {editingId === service.id ? (
+                    <div style={styles.editWrapper}>
+                      <div style={styles.editRow}>
+                        <input
+                          type="text"
+                          value={draftName}
+                          onChange={(e) => setDraftName(e.target.value)}
+                          onKeyDown={(e) => handleRenameKeyDown(e, service)}
+                          disabled={renamingId === service.id}
+                          maxLength={100}
+                          autoFocus
+                          style={styles.nameInput}
+                        />
+
+                        <button
+                          onClick={() => handleRename(service)}
+                          disabled={renamingId === service.id}
+                          style={{
+                            ...styles.saveButton,
+                            ...(renamingId === service.id ? styles.disabledButton : {})
+                          }}
+                        >
+                          {renamingId === service.id ? 'Saving...' : 'Save'}
+                        </button>
+
+                        <button
+                          onClick={cancelEditing}
+                          disabled={renamingId === service.id}
+                          style={{
+                            ...styles.cancelButton,
+                            ...(renamingId === service.id ? styles.disabledButton : {})
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+
+                      {renameError && (
+                        <p style={styles.inlineError}>{renameError}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div style={styles.nameRow}>
+                      <h3 style={styles.serviceName}>{service.name}</h3>
+
+                      <button
+                        onClick={() => startEditing(service)}
+                        style={styles.renameButton}
+                        title="Rename this service"
+                      >
+                        Rename
+                      </button>
+                    </div>
+                  )}
+
                   <StatusBadge status={service.status} />
                 </div>
 
@@ -276,13 +403,69 @@ const styles = {
   cardHeader: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: '1rem',
     marginBottom: '1rem'
+  },
+  nameRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    flexWrap: 'wrap'
   },
   serviceName: {
     margin: 0,
     color: theme.colors.text
+  },
+  editWrapper: {
+    flex: 1,
+    minWidth: 0
+  },
+  editRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    flexWrap: 'wrap'
+  },
+  nameInput: {
+    flex: 1,
+    minWidth: '12rem',
+    padding: '0.5rem 0.7rem',
+    background: theme.colors.background,
+    color: theme.colors.text,
+    border: `1px solid ${theme.colors.border}`,
+    borderRadius: theme.radius.small,
+    fontSize: '1rem',
+    fontWeight: '600'
+  },
+  renameButton: {
+    padding: '0.3rem 0.7rem',
+    cursor: 'pointer',
+    background: 'transparent',
+    color: theme.colors.mutedText,
+    border: `1px solid ${theme.colors.border}`,
+    borderRadius: theme.radius.small,
+    fontSize: '0.8rem',
+    fontWeight: '600'
+  },
+  saveButton: {
+    ...baseButton,
+    padding: '0.5rem 0.9rem',
+    background: theme.colors.primary
+  },
+  cancelButton: {
+    padding: '0.5rem 0.9rem',
+    cursor: 'pointer',
+    background: 'transparent',
+    color: theme.colors.mutedText,
+    border: `1px solid ${theme.colors.border}`,
+    borderRadius: theme.radius.small,
+    fontWeight: '600'
+  },
+  inlineError: {
+    margin: '0.5rem 0 0',
+    color: theme.colors.danger,
+    fontSize: '0.85rem'
   },
   metaText: {
     color: theme.colors.text,
