@@ -309,5 +309,45 @@
       }
     ],
     "deployedTarget": "aws"
+  },
+  {
+    "id": "1786210957498",
+    "name": "dentist-booking-aws",
+    "repoUrl": "https://github.com/ahmad-abdulmajid/dentist-booking-demo",
+    "port": 3000,
+    "target": "aws",
+    "deployedTarget": "aws",
+    "status": "created",
+    "createdAt": "2026-08-08T17:42:37.498Z",
+    "lastDeploymentStartedAt": "2026-08-08T17:42:42.955Z",
+    "lastDeploymentFinishedAt": "2026-08-08T17:43:16.894Z",
+    "lastUndeployedAt": "2026-08-08T17:45:29.578Z",
+    "deploymentError": null,
+    "localPath": "/home/qardan/cloudbuilder/backend/deployments/1786210957498",
+    "dockerImageName": "cloudbuilder-1786210957498",
+    "dockerContainerName": null,
+    "serviceUrl": null,
+    "ecrImageUri": "349326897252.dkr.ecr.eu-central-1.amazonaws.com/cloudbuilder-services:service-1786210957498",
+    "taskDefinitionArn": "arn:aws:ecs:eu-central-1:349326897252:task-definition/cloudbuilder-service-1786210957498:1",
+    "taskArn": null,
+    "publicIp": null,
+    "deploymentHistory": [
+      {
+        "id": "1786210962955-pqyppy",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-08-08T17:42:42.955Z",
+        "finishedAt": "2026-08-08T17:43:16.894Z",
+        "error": null
+      },
+      {
+        "id": "1786211128706-1odm9x",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-08-08T17:45:28.706Z",
+        "finishedAt": "2026-08-08T17:45:29.578Z",
+        "error": null
+      }
+    ]
   }
 ]
