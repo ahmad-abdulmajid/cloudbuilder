@@ -4,12 +4,12 @@
     "name": "demo-app-local",
     "repoUrl": "https://github.com/ahmad-abdulmajid/cloudbuilder-demo-app",
     "port": 3000,
-    "status": "failed",
+    "status": "created",
     "createdAt": "2026-05-22T01:21:45.612Z",
-    "lastDeploymentStartedAt": "2026-08-06T18:16:44.551Z",
-    "lastDeploymentFinishedAt": "2026-08-08T16:29:15.912Z",
-    "lastUndeployedAt": "2026-08-06T18:19:22.465Z",
-    "deploymentError": "Deployment interrupted by server restart",
+    "lastDeploymentStartedAt": "2026-08-08T18:26:22.831Z",
+    "lastDeploymentFinishedAt": "2026-08-08T18:26:27.071Z",
+    "lastUndeployedAt": "2026-08-08T18:26:52.864Z",
+    "deploymentError": null,
     "localPath": "/home/qardan/cloudbuilder/backend/deployments/1779412905612",
     "dockerImageName": "cloudbuilder-1779412905612",
     "dockerContainerName": null,
@@ -149,6 +149,22 @@
         "status": "success",
         "startedAt": "2026-08-06T18:19:22.191Z",
         "finishedAt": "2026-08-06T18:19:22.465Z",
+        "error": null
+      },
+      {
+        "id": "1786213582831-2xxfw2",
+        "type": "deploy",
+        "status": "success",
+        "startedAt": "2026-08-08T18:26:22.831Z",
+        "finishedAt": "2026-08-08T18:26:27.071Z",
+        "error": null
+      },
+      {
+        "id": "1786213609314-g8syv8",
+        "type": "undeploy",
+        "status": "success",
+        "startedAt": "2026-08-08T18:26:49.314Z",
+        "finishedAt": "2026-08-08T18:26:52.864Z",
         "error": null
       }
     ],
