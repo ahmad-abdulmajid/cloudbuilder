@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../services/api';
 import Navbar from '../components/Navbar';
 import StatusBadge from '../components/StatusBadge';
+import { TRANSITIONAL_STATUSES } from '../components/DeploymentStatus';
 import theme from '../styles/theme';
 
 function DashboardPage() {
@@ -199,6 +200,23 @@ function DashboardPage() {
     }
   };
 
+  // Derived, not stored: both values are pure functions of state that
+  // already exists (deployingId plus the service's own status), so the
+  // button can never disagree with the service it belongs to. Same
+  // principle as isDeploying on the details page — written as functions
+  // here because the dashboard renders many services, not one.
+  const isServiceDeploying = (service) =>
+    deployingId === service.id ||
+    TRANSITIONAL_STATUSES.includes(service.status);
+
+  const deployButtonLabel = (service) => {
+    if (isServiceDeploying(service)) {
+      return 'Deploying...';
+    }
+
+    return service.status === 'deployed' ? 'Redeploy' : 'Deploy';
+  };
+
   return (
     <>
       <Navbar />
@@ -315,17 +333,13 @@ function DashboardPage() {
 
                   <button
                     onClick={() => handleDeploy(service.id)}
-                    disabled={deployingId === service.id || service.status === 'building'}
+                    disabled={isServiceDeploying(service)}
                     style={{
                       ...styles.deployButton,
-                      ...(deployingId === service.id || service.status === 'building'
-                        ? styles.disabledButton
-                        : {})
+                      ...(isServiceDeploying(service) ? styles.disabledButton : {})
                     }}
                   >
-                    {deployingId === service.id || service.status === 'building'
-                      ? 'Deploying...'
-                      : 'Deploy'}
+                    {deployButtonLabel(service)}
                   </button>
 
                   {service.status === 'deployed' && (
