@@ -15,6 +15,8 @@
     "@aws-sdk/client-ec2": "^3.1095.0",
     "@aws-sdk/client-ecr": "^3.1095.0",
     "@aws-sdk/client-ecs": "^3.1095.0",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1"
