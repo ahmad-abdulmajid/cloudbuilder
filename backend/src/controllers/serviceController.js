@@ -7,6 +7,7 @@ const {
   startAwsDeployment,
   stopAwsDeployment,
 } = require("../services/awsDeploymentFlow");
+const { getServiceLogs: fetchServiceLogs } = require("../services/logsService");
 const AppError = require("../utils/AppError");
 const asyncHandler = require("../utils/asyncHandler");
 const { ALL_STATUSES } = require("../constants/statuses");
@@ -393,6 +394,24 @@ const deleteService = asyncHandler(async (req, res) => {
     message: "Service deleted successfully",
     service: deletedService,
   });
+  
+});
+/**
+ * Returns recent CloudWatch log events for a service.
+ * Only meaningful for AWS-targeted services; local deployments
+ * write to the operator's terminal, not CloudWatch, so they get
+ * an empty result rather than an error.
+ */
+const getServiceLogs = asyncHandler(async (req, res) => {
+  const services = loadServices();
+  const service = services.find((s) => s.id === req.params.id);
+
+  if (!service) {
+    throw new AppError("Service not found", 404);
+  }
+
+  const logs = await fetchServiceLogs(service.id);
+  res.json(logs);
 });
 
 module.exports = {
@@ -405,4 +424,6 @@ module.exports = {
   redeployService,
   stopService,
   deleteService,
+  getServiceLogs,
 };
+

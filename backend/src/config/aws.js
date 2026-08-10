@@ -4,6 +4,7 @@ require("dotenv").config({ path: path.join(__dirname, "..", "..", ".env") });
 const { ECRClient } = require("@aws-sdk/client-ecr");
 const { ECSClient } = require("@aws-sdk/client-ecs");
 const { EC2Client } = require("@aws-sdk/client-ec2");
+const { CloudWatchLogsClient } = require("@aws-sdk/client-cloudwatch-logs");
 
 const region = process.env.AWS_REGION;
 
@@ -17,6 +18,7 @@ const awsConfig = { region, credentials };
 const ecrClient = new ECRClient(awsConfig);
 const ecsClient = new ECSClient(awsConfig);
 const ec2Client = new EC2Client(awsConfig);
+const logsClient = new CloudWatchLogsClient(awsConfig);
 
 const awsSettings = {
   region,
@@ -34,5 +36,6 @@ module.exports = {
   ecrClient,
   ecsClient,
   ec2Client,
+  logsClient,
   awsSettings,
 };
