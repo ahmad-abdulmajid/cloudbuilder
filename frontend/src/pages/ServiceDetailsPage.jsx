@@ -11,6 +11,9 @@ function ServiceDetailsPage() {
   const [service, setService] = useState(null);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [logs, setLogs] = useState(null);
+  const [logsLoading, setLogsLoading] = useState(false);
+  const [logsError, setLogsError] = useState('');
 
   const fetchService = useCallback(async () => {
     try {
@@ -52,6 +55,19 @@ function ServiceDetailsPage() {
       setError(err.message);
     } finally {
       setActionLoading(false);
+    }
+  };
+  const handleFetchLogs = async () => {
+    setLogsLoading(true);
+    setLogsError('');
+
+    try {
+      const response = await api.get(`/services/${id}/logs`);
+      setLogs(response.data);
+    } catch (err) {
+      setLogsError(err.message);
+    } finally {
+      setLogsLoading(false);
     }
   };
 
@@ -334,7 +350,38 @@ function ServiceDetailsPage() {
               </div>
             )}
           </section>
+{isAws && (
+            <section style={styles.section}>
+              <h2 style={styles.sectionTitle}>Logs</h2>
 
+              <button
+                onClick={handleFetchLogs}
+                disabled={logsLoading}
+                style={{
+                  ...styles.button,
+                  ...(logsLoading ? styles.buttonDisabled : {})
+                }}
+              >
+                {logsLoading ? 'Loading...' : logs ? 'Refresh Logs' : 'Load Logs'}
+              </button>
+
+              {logsError && <p style={styles.errorBox}>{logsError}</p>}
+
+              {logs && logs.events.length === 0 && (
+                <p style={styles.info}>
+                  No logs yet — this service has not produced any output on AWS.
+                </p>
+              )}
+
+              {logs && logs.events.length > 0 && (
+                <pre style={styles.logBox}>
+                  {logs.events
+                    .map((e) => `${new Date(e.timestamp).toLocaleTimeString()}  ${e.message}`)
+                    .join('\n')}
+                </pre>
+              )}
+            </section>
+          )}
           <div style={styles.footer}>
             <Link to="/dashboard" style={styles.link}>
               Back to Dashboard
@@ -460,6 +507,17 @@ const styles = {
   info: {
     color: theme.colors.mutedText,
     fontSize: '1rem'
+  },
+  logBox: {
+    marginTop: '1rem',
+    background: '#111',
+    color: '#e0e0e0',
+    padding: '1rem',
+    borderRadius: theme.radius.small,
+    fontFamily: 'monospace',
+    fontSize: '0.85rem',
+    overflowX: 'auto',
+    whiteSpace: 'pre-wrap',
   },
   errorBox: {
     color: theme.colors.danger,
