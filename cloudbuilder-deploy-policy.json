@@ -1,58 +1,68 @@
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "EcrAuth",
-      "Effect": "Allow",
-      "Action": "ecr:GetAuthorizationToken",
-      "Resource": "*"
-    },
-    {
-      "Sid": "EcrPush",
-      "Effect": "Allow",
-      "Action": [
-        "ecr:BatchCheckLayerAvailability",
-        "ecr:InitiateLayerUpload",
-        "ecr:UploadLayerPart",
-        "ecr:CompleteLayerUpload",
-        "ecr:PutImage",
-        "ecr:BatchGetImage",
-        "ecr:DescribeRepositories",
-        "ecr:DescribeImages"
-      ],
-      "Resource": "arn:aws:ecr:eu-central-1:349326897252:repository/cloudbuilder-*"
-    },
-    {
-      "Sid": "EcsManage",
-      "Effect": "Allow",
-      "Action": [
-        "ecs:RegisterTaskDefinition",
-        "ecs:DescribeTaskDefinition",
-        "ecs:ListTaskDefinitions",
-        "ecs:RunTask",
-        "ecs:StopTask",
-        "ecs:DescribeTasks",
-        "ecs:ListTasks",
-        "ecs:DescribeClusters"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "ReadNetworkInterfaces",
-      "Effect": "Allow",
-      "Action": "ec2:DescribeNetworkInterfaces",
-      "Resource": "*"
-    },
-    {
-      "Sid": "PassExecutionRole",
-      "Effect": "Allow",
-      "Action": "iam:PassRole",
-      "Resource": "arn:aws:iam::349326897252:role/ecsTaskExecutionRole",
-      "Condition": {
-        "StringEquals": {
-          "iam:PassedToService": "ecs-tasks.amazonaws.com"
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "EcrAuth",
+            "Effect": "Allow",
+            "Action": "ecr:GetAuthorizationToken",
+            "Resource": "*"
+        },
+        {
+            "Sid": "EcrPush",
+            "Effect": "Allow",
+            "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:InitiateLayerUpload",
+                "ecr:UploadLayerPart",
+                "ecr:CompleteLayerUpload",
+                "ecr:PutImage",
+                "ecr:BatchGetImage",
+                "ecr:DescribeRepositories",
+                "ecr:DescribeImages"
+            ],
+            "Resource": "arn:aws:ecr:eu-central-1:349326897252:repository/cloudbuilder-*"
+        },
+        {
+            "Sid": "EcsManage",
+            "Effect": "Allow",
+            "Action": [
+                "ecs:RegisterTaskDefinition",
+                "ecs:DescribeTaskDefinition",
+                "ecs:ListTaskDefinitions",
+                "ecs:RunTask",
+                "ecs:StopTask",
+                "ecs:DescribeTasks",
+                "ecs:ListTasks",
+                "ecs:DescribeClusters"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "ReadNetworkInterfaces",
+            "Effect": "Allow",
+            "Action": "ec2:DescribeNetworkInterfaces",
+            "Resource": "*"
+        },
+        {
+            "Sid": "PassExecutionRole",
+            "Effect": "Allow",
+            "Action": "iam:PassRole",
+            "Resource": "arn:aws:iam::349326897252:role/ecsTaskExecutionRole",
+            "Condition": {
+                "StringEquals": {
+                    "iam:PassedToService": "ecs-tasks.amazonaws.com"
+                }
+            }
+        },
+        {
+            "Sid": "CloudWatchLogsRead",
+            "Effect": "Allow",
+            "Action": [
+                "logs:DescribeLogStreams",
+                "logs:GetLogEvents",
+                "logs:FilterLogEvents"
+            ],
+            "Resource": "arn:aws:logs:eu-central-1:349326897252:log-group:/ecs/cloudbuilder-services:*"
         }
-      }
-    }
-  ]
+    ]
 }
