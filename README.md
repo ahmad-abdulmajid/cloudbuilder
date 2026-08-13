@@ -1,148 +1,114 @@
 # CloudBuilder
 
-A self-service deployment platform that takes a public GitHub repository and returns a running application on AWS.
+**Automated Application Deployment on AWS**
 
-Paste a repository URL, choose a port, click Deploy. The platform clones the repository, builds a Docker image, pushes it to Amazon ECR, registers an ECS task definition, launches the container on AWS Fargate, and returns a public URL — with live status, container logs, and one-click teardown.
+## Project Overview
 
-Built as a graduation project for the Syrian Virtual University (Information Technology, Cybersecurity specialization).
+CloudBuilder is a self-service deployment platform that takes a public GitHub repository and turns it into a running application on AWS. A user enters a repository URL and a port, and the platform handles everything that follows: cloning the source, building a Docker image, publishing it to a private registry, provisioning a container task, launching it on serverless compute, and returning a public URL.
 
----
+The project demonstrates how a DevOps deployment pipeline is assembled from AWS primitives, with an emphasis on least-privilege access control, operational visibility, and cost safety.
 
-## What it does
+Developed as a graduation project at the Syrian Virtual University, Information Technology — Cybersecurity specialization.
 
-| | |
-|---|---|
-| **Input** | A public GitHub repository containing a `Dockerfile`, plus a port |
-| **Output** | A running container on AWS Fargate reachable at `http://<public-ip>:<port>` |
-| **Pipeline** | clone → build → push to ECR → register task definition → run task → resolve public IP |
-| **Also** | deployment history, redeploy, undeploy, container logs, authentication |
+## Deployment Pipeline
+
+```
+GitHub repository
+       │
+       ▼
+   Clone source
+       │
+       ▼
+   Build Docker image
+       │
+       ▼
+   Push to Amazon ECR
+       │
+       ▼
+   Register ECS task definition
+       │
+       ▼
+   Launch task on AWS Fargate
+       │
+       ▼
+   Resolve public IP  ──▶  Live application URL
+```
+
+Container logs stream to CloudWatch throughout, and are readable from inside the platform.
 
 ## Architecture
 
 ```
-Browser (React SPA)
-        │  same-origin, session cookie
-        ▼
-Express API  ── requireAuth ──▶ deployment orchestration
-        │                              │
-        │                              ├──▶ Docker (local build)
-        │                              ├──▶ Amazon ECR   (image registry)
-        │                              ├──▶ Amazon ECS   (Fargate tasks)
-        │                              ├──▶ Amazon EC2   (public IP lookup)
-        │                              └──▶ CloudWatch   (container logs)
-        │
-        └──▶ services.json (deployment state)
+Browser (React)
+      │  same-origin session cookie
+      ▼
+Express API  ──authentication guard──▶  Deployment orchestration
+                                              │
+                                              ├──▶  Docker      image build
+                                              ├──▶  Amazon ECR  image registry
+                                              ├──▶  Amazon ECS  Fargate tasks
+                                              ├──▶  Amazon EC2  public IP resolution
+                                              └──▶  CloudWatch  container logs
 ```
 
-The Express server serves both the built React frontend and the API under `/api/`, so there is a single origin and no CORS configuration.
+A single Express server delivers both the React interface and the API, giving the platform one origin, no cross-origin configuration, and one entry point to secure.
 
-## Features
+## Key Design Highlights
 
-**Deployment**
-- One-click deployment from a public GitHub repository to AWS Fargate
-- Local Docker deployment as an alternative target, useful for development
-- Redeploy and undeploy on demand
-- Per-service task definition families, so each deployment keeps a versioned history of its configuration
-- Startup recovery sweep that reconciles deployments interrupted by a server restart
+**Deployment automation**
+- End-to-end pipeline from repository URL to live public URL, triggered by a single user action
+- Deployment status tracking with full history per service, plus redeploy and teardown on demand
+- A dedicated task definition family per service, so every deployed configuration is versioned
+- Startup reconciliation that repairs deployments interrupted by a server restart
 
 **Security**
-- Session-based authentication: bcrypt password hashing, cryptographically random session tokens, httpOnly and SameSite cookies, server-side revocation on logout
-- Every deployment route guarded at the router mount, so new routes are protected by inheritance
-- A dedicated IAM identity for the application, separate from the operator's, scoped to the minimum actions the platform needs
-- The IAM policy is committed as code in [`cloudbuilder-deploy-policy.json`](cloudbuilder-deploy-policy.json) and was verified with paired allow and deny probes
+- Session-based authentication composed from vetted primitives: bcrypt password hashing, cryptographically random session tokens, httpOnly and SameSite cookies, and server-side revocation on logout
+- Authorization enforced at the router mount, so every current and future deployment route is protected by inheritance
+- A dedicated IAM identity for the application, separate from the operator's, scoped to the minimum actions the pipeline requires
+- The IAM policy is version-controlled alongside the code and was validated with paired allow and deny probes — proving not only that permitted actions succeed, but that everything else is refused
 
 **Observability**
-- Container logs shipped to CloudWatch Logs by the platform-generated task definitions
-- Logs retrieved and displayed inside the platform, behind authentication
-- Bounded log retention rather than indefinite storage
+- Container logs shipped to CloudWatch Logs by the platform's generated task definitions
+- Logs retrieved and displayed within the platform itself, behind authentication
+- Explicit log retention rather than indefinite storage
 
 **Cost safety**
-- One-off ECS tasks rather than long-running services, so nothing keeps billing after a stop
-- A failure after task launch stops the task before recording the error
-- The task ARN is persisted immediately after launch, so a crashed process still leaves a record of billable compute
-- The UI discloses that Fargate deployments bill per second at the point where the target is chosen
+- One-off container tasks instead of continuously running services, so stopped means stopped
+- A failure after launch stops the task before the error is recorded, preventing untracked billable compute
+- Task identifiers are persisted the moment a task starts, so an interrupted process still leaves a record of what is running
+- The interface discloses per-second billing at the point where cloud deployment is chosen
 
-## Tech stack
+## Technologies Used
 
-Node.js · Express · React · Vite · Docker · Amazon ECR · Amazon ECS (Fargate) · IAM · CloudWatch Logs · AWS SDK v3
+- **Amazon ECS (Fargate)** — serverless container execution
+- **Amazon ECR** — private Docker image registry
+- **AWS IAM** — least-privilege access control for the application identity
+- **Amazon CloudWatch Logs** — container log collection and retrieval
+- **Docker** — application containerization and image builds
+- **Node.js / Express** — deployment orchestration and API
+- **React / Vite** — platform interface
+- **AWS SDK v3** — programmatic control of AWS resources
+- **Git / GitHub** — source retrieval for deployed applications
 
-## Getting started
+## Project Status
 
-### Prerequisites
+- Deployment pipeline implemented end to end and verified on AWS
+- Authentication, least-privilege IAM, and CloudWatch log retrieval implemented and tested, including negative tests for denied access
+- Validated by deploying an independent application — an appointment booking service — through the platform and using it over the public internet from a mobile device
 
-- Node.js 18+
-- Docker, running locally (the platform builds images on the host)
-- An AWS account with an IAM user for the application
-- AWS resources created in advance: an ECR repository, an ECS cluster, an ECS task execution role, a CloudWatch log group, and a security group allowing inbound TCP on the port range you intend to use
+## Scope and Limitations
 
-### Installation
+Deliberate boundaries for a single-semester project, documented rather than hidden.
 
-```bash
-git clone https://github.com/ahmad-abdulmajid/cloudbuilder.git
-cd cloudbuilder
+- **Single tenant.** Authentication establishes who may enter, not which services belong to whom. Multi-user support would require an identity provider, ownership recorded per service, per-request ownership checks, and isolation of AWS resources between users.
+- **File-based state.** Deployment records are stored in a JSON file rather than a database. The storage layer is isolated behind a single module, making a migration to DynamoDB a contained change.
+- **Locally hosted control plane.** Image builds require a Docker daemon on the host, which serverless container tasks do not provide, and the server holds AWS credentials. Public access is therefore granted on demand through an authenticated ephemeral tunnel rather than permanent hosting — exposure limited to the moment it is needed.
+- **No CI/CD.** Deployment is initiated by a user action rather than by a commit. Adding a pipeline is the natural next step.
+- **Shared network isolation.** Deployed services share one security group covering a port range; one group per service would narrow the blast radius.
+- **Fixed image tags.** Each service publishes to a single registry tag, so a redeployment replaces the previous image and no rollback path exists. Tagging per build would provide one.
 
-# backend
-cd backend && npm install
+## Author
 
-# frontend
-cd ../frontend && npm install && npm run build
-```
-
-### Configuration
-
-Create `backend/.env`:
-
-```ini
-AWS_ACCESS_KEY_ID='...'
-AWS_SECRET_ACCESS_KEY='...'
-AWS_REGION='eu-central-1'
-
-AUTH_EMAIL='you@example.com'
-AUTH_PASSWORD_HASH='<bcrypt hash>'
-```
-
-Generate the password hash rather than storing a plaintext password:
-
-```bash
-node -e "console.log(require('bcryptjs').hashSync(process.argv[1], 12))" 'your-password'
-```
-
-Values are single-quoted because bcrypt hashes contain `$`.
-
-### Running
-
-```bash
-cd backend && npm start
-```
-
-The application is served at `http://localhost:5000` — frontend and API on the same origin.
-
-## Documentation
-
-- [`cloudbuilder-deploy-policy.json`](cloudbuilder-deploy-policy.json) — the IAM policy granted to the application identity
-
-## Scope and limitations
-
-These are deliberate boundaries for a single-semester project, documented rather than hidden.
-
-- **Single tenant.** Authentication answers "may you enter?", not "which services are yours?". Multi-user support would require a user store, an owner field stamped from the session, per-route ownership checks, and per-user AWS resource isolation.
-- **File-based storage.** Deployment state lives in a JSON file rather than a database. The storage layer is isolated behind a single module, so migrating to DynamoDB is a contained change.
-- **The control plane runs locally.** Deployments shell out to a Docker daemon on the host, which Fargate tasks do not provide, and the server holds AWS credentials. Public access is provided on demand through an authenticated ephemeral tunnel rather than permanent hosting.
-- **No CI/CD.** Deployment is triggered by a user action, not by a commit. Adding a pipeline is a natural next step.
-- **Shared security group.** All deployed services share one security group covering a port range. One security group per service would reduce blast radius.
-- **Fixed image tags.** Each service pushes to a single ECR tag, so a redeploy overwrites the previous image and there is no rollback. Tagging per build would enable one.
-- **No ECS health check.** ECS knows the container process is alive, not that the application responds.
-
-## Cost
-
-Fargate is not covered by the AWS free tier and bills per second while a task runs. The platform is designed around this: tasks are one-off rather than long-running, teardown is one click, and the interface states the cost before a cloud deployment is chosen. Verify nothing is running with:
-
-```bash
-aws ecs list-tasks --cluster <your-cluster> --region <your-region>
-```
-
-An empty `taskArns` array means no compute is billing.
-
-## License
-
-MIT
+**Ahmad Abdulmajid**
+Cybersecurity | Cloud Computing
+Syrian Virtual University
